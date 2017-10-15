@@ -1,0 +1,19 @@
+mat-sidenav-container {
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+
+  mat-sidenav {
+    ul {
+      list-style: none;
+      padding-left: 16px;
+    }
+  }
+
+  .filter-actions {
+    button {
+      display: block;
+      width: 100%;
+      text-align: left;
+    }
+  }
+}

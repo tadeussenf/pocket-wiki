@@ -1,0 +1,26 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
+.spacer {
+  flex: 1 1 auto
+}
+
+mat-chip-list {
+  .mat-chip-list-wrapper {
+    mat-chip.mat-chip {
+      border-radius: 4px;
+      padding: 2px 4px;
+    }
+  }
+}
+
+mat-list-option {
+  // todo animation does not fill this element when clicked
+  padding: 4px 16px;
+}
+
+a {
+  &:visited {
+    color: blue;
+  }
+}

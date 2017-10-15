@@ -1,0 +1,73 @@
+<!--sidebar-->
+<mat-sidenav-container>
+  <mat-sidenav mode="side" opened="true">
+
+    <mat-toolbar>
+      <span>{{this.username}}</span>
+    </mat-toolbar>
+
+    <!--filter-actions-->
+    <div class="filter-actions">
+      <button mat-button (click)="filterByDate(0)">All items</button>
+      <button mat-button (click)="filterByDate(1)">Last 24 hours</button>
+      <button mat-button (click)="filterByDate(7)">Last 7 days</button>
+      <button mat-button (click)="filterNoTags()">Not tagged</button>
+    </div>
+
+    <!--tags-list-->
+    <div class="tags-list">
+      <h4>Tags ({{tagCount.length}})</h4>
+      <ul *ngIf="tagCount && tagCount.length > 0">
+        <li *ngFor="let tag of tagCount" dnd-droppable (onDropSuccess)="simpleDrop($event)">
+          <a style="cursor: pointer" (click)="showItemsForTag(tag.name)">
+            {{tag.name}}
+            {{tag.count}}
+          </a>
+        </li>
+      </ul>
+    </div>
+  </mat-sidenav>
+
+  <!--main content-->
+  <mat-sidenav-content>
+
+    <mat-toolbar>
+      <span>{{list.length}} items</span>
+      <span class="spacer"></span>
+      <mat-icon (click)="loadAllItems()">refresh</mat-icon>
+    </mat-toolbar>
+
+    <!--item list-->
+    <!--todo odd even background-->
+    <div *ngIf="filteredList.length > 0">
+      <mat-selection-list>
+        <mat-list-option *ngFor="let item of filteredList" checkboxPosition="before" dnd-draggable [dragEnabled]="true">
+          <md-row>
+            <a href="{{item.given_url}}">
+              <b>{{item.resolved_title}}</b>
+            </a>
+            <small><i>{{item.time_added + '000' | date}}</i></small>
+            <mat-card-actions style="float:right;">
+              <mat-icon>done</mat-icon>
+              <mat-icon>bookmark_border</mat-icon>
+              <mat-icon>delete</mat-icon>
+            </mat-card-actions>
+          </md-row>
+
+          <md-row>
+            <mat-chip-list>
+              <mat-chip *ngFor="let tag of item.customTags">{{tag}}</mat-chip>
+            </mat-chip-list>
+          </md-row>
+
+        </mat-list-option>
+      </mat-selection-list>
+
+    </div>
+
+  </mat-sidenav-content>
+
+
+</mat-sidenav-container>
+
+
