@@ -14,6 +14,10 @@ mat-chip-list {
   }
 }
 
+mat-form-field.mat-form-field {
+  width: 100%;
+}
+
 mat-list-option {
   // todo animation does not fill this element when clicked
   padding: 4px 16px;

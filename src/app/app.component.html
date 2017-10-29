@@ -36,12 +36,15 @@
       <span class="spacer"></span>
       <!--todo show as cards instead of list-->
       <!--todo show archived items-->
-      <mat-icon (click)="loadAllItems()">refresh</mat-icon>
+      <mat-icon (click)="refresh()">refresh</mat-icon>
     </mat-toolbar>
+
+    <!-- todo makes no sense because rxjs is not implemented yet-->
+    <mat-progress-bar mode="indeterminate" *ngIf="filteredList.length === 0 && showSpinner"></mat-progress-bar>
 
     <!--item list-->
     <!--todo odd even background-->
-    <mat-list *ngIf="filteredList.length > 0">
+    <mat-list *ngIf="filteredList.length > 0 && !showSpinner">
       <mat-list-item *ngFor="let item of filteredList" dnd-draggable [dragEnabled]="true">
 
         <!--<mat-checkbox matListIcon></mat-checkbox>-->
@@ -53,6 +56,8 @@
           <small><i>{{item.time_added + '000' | date}}</i></small>
         </div>
 
+        <p class="excerpt" matLine><i>{{item.excerpt}}</i></p>
+
         <mat-chip-list matLine>
           <mat-chip *ngFor="let tag of item.customTags">
             <a style="cursor: pointer" (click)="filterByTag(tag)">{{tag}}</a>
@@ -60,7 +65,8 @@
         </mat-chip-list>
 
         <mat-icon>done</mat-icon>
-        <mat-icon (click)="addTags(item.item_id, ['test', 'test2'])">bookmark_border</mat-icon>
+        <mat-icon (click)="showAddTagsModal(item.item_id, item.resolved_title, item.customTags )">bookmark_border
+        </mat-icon>
         <mat-icon>delete</mat-icon>
 
       </mat-list-item>

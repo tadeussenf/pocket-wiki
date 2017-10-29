@@ -52,7 +52,7 @@ export class PocketService {
       "consumer_key": this.consumerKey,
       "access_token": this.accessToken,
       actions: [{
-        action: "tags_add",
+        action: "tags_replace",
         item_id: itemId,
         tags: tags.toString(),
         time: Date.now() - 1000

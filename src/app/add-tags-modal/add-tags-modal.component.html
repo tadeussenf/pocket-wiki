@@ -1,0 +1,30 @@
+<h1 mat-dialog-title>{{data.title}}</h1>
+<div mat-dialog-content>
+
+  <mat-form-field class="demo-chip-list">
+    <mat-chip-list #chipList>
+      <mat-chip *ngFor="let tag of data.tags" [selectable]="selectable"
+                [removable]="removable" (remove)="remove(tag)">
+        {{tag}}
+        <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+      </mat-chip>
+      <input placeholder="New fruit..."
+             [matChipInputFor]="chipList"
+             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+             [matChipInputAddOnBlur]="addOnBlur"
+             (matChipInputTokenEnd)="add($event)" />
+    </mat-chip-list>
+  </mat-form-field>
+
+  <!--<mat-selection-list>-->
+    <!--<mat-list-option *ngFor="let tag of pocket.getTags()">-->
+      <!--<span>{{tag.name}}</span>-->
+      <!--<span style="float: right;">{{tag.count}}</span>-->
+    <!--</mat-list-option>-->
+  <!--</mat-selection-list>-->
+
+</div>
+<div mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="data" tabindex="2">Save</button>
+  <button mat-button (click)="onNoClick()" tabindex="-1">Cancel</button>
+</div>

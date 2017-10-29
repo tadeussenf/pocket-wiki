@@ -47,3 +47,9 @@ export interface Image {
   credit: string;
   caption: string;
 }
+
+export interface AddTagModalData {
+  itemId: number,
+  title: string,
+  tags: string[]
+}

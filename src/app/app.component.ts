@@ -2,8 +2,10 @@
 import {Component, OnInit} from '@angular/core';
 import {Http, RequestOptionsArgs, Headers} from "@angular/http";
 import * as _ from 'lodash';
-import {Item} from "common/interfaces";
+import {AddTagModalData, Item} from "common/interfaces";
 import {PocketService} from "./pocket.service";
+import {MatDialog} from "@angular/material";
+import {AddTagsModalComponent} from "./add-tags-modal/add-tags-modal.component";
 
 @Component({
   selector: 'app-root',
@@ -11,22 +13,13 @@ import {PocketService} from "./pocket.service";
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-
+  showSpinner: boolean = false;
   username: any;
-  accessToken: any;
-  title = 'app';
-  consumerKey = "71520-12304220fa8fcbd039b9be34";
-  headers: Headers = new Headers({
-    'Content-Type': 'application/json',
-    'X-Accept': 'application/json'
-  });
   list: Item[] = [];
   filteredList: Item[];
-  options: RequestOptionsArgs = {'headers': this.headers};
-  private requestToken: string;
   tags: { name: any; count: number }[];
 
-  constructor(private http: Http, private pocket: PocketService) {
+  constructor(private pocket: PocketService, public dialog: MatDialog) {
 
   }
 
@@ -34,9 +27,13 @@ export class AppComponent implements OnInit {
     this.loadData()
   }
 
-  public loadAllItems() {
+  public refresh() {
+    this.filteredList = [];
+    this.tags = [];
+    this.showSpinner = true;
     this.pocket.loadAllItems();
-    this.loadData()
+    this.loadData();
+    this.showSpinner = false;
 
   }
 
@@ -48,10 +45,6 @@ export class AppComponent implements OnInit {
   resetFilter() {
     this.pocket.resetFilter();
     this.loadData();
-  }
-
-  addTags(itemId: number, tags: string[]) {
-    this.pocket.addTags(itemId, tags);
   }
 
   filterByDate(days: number) {
@@ -73,4 +66,20 @@ export class AppComponent implements OnInit {
     this.tags = this.pocket.getTags();
   }
 
+  showAddTagsModal(itemId: number, title: string, tags: string[]): void {
+    let dialogRef = this.dialog.open(AddTagsModalComponent, {
+      width: '500px',
+      data: {
+        itemId: itemId,
+        title: title,
+        tags: tags
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((result: AddTagModalData) => {
+      if (result) {
+        this.pocket.addTags(result.itemId, result.tags);
+      }
+    });
+  }
 }

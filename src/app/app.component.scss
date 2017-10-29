@@ -10,6 +10,15 @@ mat-sidenav-container {
     }
   }
 
+  .excerpt {
+    white-space: inherit;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    i {
+      font-size: 13px;
+    }
+  }
+
   .filter-actions {
     button {
       display: block;
