@@ -16,12 +16,12 @@
 
     <!--tags-list-->
     <div class="tags-list">
-      <h4>Tags ({{tagCount.length}})</h4>
-      <ul *ngIf="tagCount && tagCount.length > 0">
-        <li *ngFor="let tag of tagCount" dnd-droppable (onDropSuccess)="simpleDrop($event)">
-          <a style="cursor: pointer" (click)="showItemsForTag(tag.name)">
-            {{tag.name}}
-            {{tag.count}}
+      <h4>Tags ({{tags.length}})</h4>
+      <ul *ngIf="tags && tags.length > 0">
+        <li *ngFor="let tag of tags" dnd-droppable (onDropSuccess)="simpleDrop($event)">
+          <a style="cursor: pointer" (click)="filterByTag(tag.name)">
+            <span>{{tag.name}}</span>
+            <span style="float: right">{{tag.count}}</span>
           </a>
         </li>
       </ul>
@@ -32,38 +32,39 @@
   <mat-sidenav-content>
 
     <mat-toolbar>
-      <span>{{list.length}} items</span>
+      <span>{{filteredList.length}} items</span>
       <span class="spacer"></span>
+      <!--todo show as cards instead of list-->
+      <!--todo show archived items-->
       <mat-icon (click)="loadAllItems()">refresh</mat-icon>
     </mat-toolbar>
 
     <!--item list-->
     <!--todo odd even background-->
-    <div *ngIf="filteredList.length > 0">
-      <mat-selection-list>
-        <mat-list-option *ngFor="let item of filteredList" checkboxPosition="before" dnd-draggable [dragEnabled]="true">
-          <md-row>
-            <a href="{{item.given_url}}">
-              <b>{{item.resolved_title}}</b>
-            </a>
-            <small><i>{{item.time_added + '000' | date}}</i></small>
-            <mat-card-actions style="float:right;">
-              <mat-icon>done</mat-icon>
-              <mat-icon>bookmark_border</mat-icon>
-              <mat-icon>delete</mat-icon>
-            </mat-card-actions>
-          </md-row>
+    <mat-list *ngIf="filteredList.length > 0">
+      <mat-list-item *ngFor="let item of filteredList" dnd-draggable [dragEnabled]="true">
 
-          <md-row>
-            <mat-chip-list>
-              <mat-chip *ngFor="let tag of item.customTags">{{tag}}</mat-chip>
-            </mat-chip-list>
-          </md-row>
+        <!--<mat-checkbox matListIcon></mat-checkbox>-->
 
-        </mat-list-option>
-      </mat-selection-list>
+        <div matLine>
+          <a href="{{item.given_url}}" target="_blank">
+            <b>{{item.resolved_title}}</b>
+          </a>
+          <small><i>{{item.time_added + '000' | date}}</i></small>
+        </div>
 
-    </div>
+        <mat-chip-list matLine>
+          <mat-chip *ngFor="let tag of item.customTags">
+            <a style="cursor: pointer" (click)="filterByTag(tag)">{{tag}}</a>
+          </mat-chip>
+        </mat-chip-list>
+
+        <mat-icon>done</mat-icon>
+        <mat-icon (click)="addTags(item.item_id, ['test', 'test2'])">bookmark_border</mat-icon>
+        <mat-icon>delete</mat-icon>
+
+      </mat-list-item>
+    </mat-list>
 
   </mat-sidenav-content>
 

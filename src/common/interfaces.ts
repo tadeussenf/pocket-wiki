@@ -1,4 +1,4 @@
-﻿﻿export interface Item {
+﻿export interface Item {
   item_id: string;
   resolved_id: string;
   given_url: string;

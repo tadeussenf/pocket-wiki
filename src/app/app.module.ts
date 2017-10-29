@@ -1,14 +1,15 @@
-import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-
 import {AppComponent} from './app.component';
-import {HttpModule} from "@angular/http";
 import {DndModule} from "ng2-dnd";
 import {
-  MatButtonModule, MatCardModule, MatChipsModule, MatIconModule, MatListModule, MatMenuModule, MatSidenavModule,
+  MatButtonModule, MatCardModule, MatCheckboxModule, MatChipsModule, MatIconModule, MatListModule, MatMenuModule,
+  MatSidenavModule,
   MatToolbarModule
 } from "@angular/material";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {HttpModule} from "@angular/http";
+import {BrowserModule} from "@angular/platform-browser";
+import {PocketService} from "./pocket.service";
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
     HttpModule,
     BrowserAnimationsModule,
     MatMenuModule,
+    MatCheckboxModule,
     MatIconModule,
     MatChipsModule,
     MatToolbarModule,
@@ -28,7 +30,9 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
     MatButtonModule,
     DndModule.forRoot()
   ],
-  providers: [],
+  providers: [
+    PocketService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
