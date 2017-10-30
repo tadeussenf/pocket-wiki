@@ -12,17 +12,17 @@ const COMMA = 188;
   styleUrls: ['./add-tags-modal.component.scss']
 })
 export class AddTagsModalComponent implements OnInit {
+  selectable: boolean = true;
+  removable: boolean = true;
+  addOnBlur: boolean = true;
+  separatorKeysCodes = [COMMA];
+
+  // todo save data on ENTER
 
   constructor(public dialogRef: MatDialogRef<AddTagsModalComponent>,
               @Inject(MAT_DIALOG_DATA) public data: AddTagModalData,
               public pocket: PocketService) {
   }
-
-////////
-  selectable: boolean = true;
-  removable: boolean = true;
-  addOnBlur: boolean = true;
-  separatorKeysCodes = [ENTER, COMMA];
 
   add(event: MatChipInputEvent): void {
     console.log("add", event);
@@ -44,13 +44,7 @@ export class AddTagsModalComponent implements OnInit {
     }
   }
 
-  //////
-
   ngOnInit() {
-  }
-
-  removeTag(tag: string) {
-    console.log("Implement me")
   }
 
   onNoClick(): void {

@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Item} from "../common/interfaces";
 import {Http, RequestOptionsArgs, Headers} from "@angular/http";
 import * as _ from 'lodash';
+import {environment} from "../environments/environment";
 
 @Injectable()
 export class PocketService {
@@ -26,6 +27,7 @@ export class PocketService {
 
   constructor(private http: Http) {
     console.log("init service");
+    console.log(environment);
 
     this.lastUpdateTime = localStorage.getItem("pocket-lastUpdateTime");
     this.username = localStorage.getItem("pocket-username");
@@ -35,6 +37,7 @@ export class PocketService {
 
     // not authenticated
     if (!this.accessToken || !this.username) {
+      // todo delete data or inform user that pocket auth has been lost
       this.authenticateWithPocket()
     } else if (!this.list || this.list.length < 1 || !this.tags || this.tags.length < 1 || this.dataOutdated()) {
       this.loadAllItems()
@@ -59,10 +62,11 @@ export class PocketService {
       }]
     };
     console.log(body);
-    this.http.post("/v3/send", body, this.options)
+    this.http.post(environment.pocketApiUrl + "v3/send", body, this.options)
       .subscribe(
         res => {
           // todo add tags to local copy
+          this.saveToLocalStorage();
           console.log(res.json());
         },
         err => {
@@ -78,12 +82,12 @@ export class PocketService {
     // recieved pocket auth callback
     if (this.requestToken) {
       console.log("found requestToken in LS");
-      this.http.post("/v3/oauth/authorize", {
+      this.http.post(environment.pocketApiUrl + "v3/oauth/authorize", {
         "consumer_key": this.consumerKey,
         "code": this.requestToken
       }, this.options).subscribe(
         (res) => {
-          let response = res.json()
+          let response = res.json();
           console.log(response);
           this.username = response.username;
           this.accessToken = response.access_token;
@@ -96,9 +100,9 @@ export class PocketService {
         }
       )
     } else {
-      this.http.post("/v3/oauth/request", {
+      this.http.post(environment.pocketApiUrl + "v3/oauth/request", {
         "consumer_key": this.consumerKey,
-        "redirect_uri": "localhost:4200"
+        "redirect_uri": environment.redirectUrl
       }, this.options).subscribe((res: any) => {
           let response = res.json();
           console.log(response);
@@ -108,7 +112,7 @@ export class PocketService {
             localStorage.setItem("pocket-requestToken", this.requestToken);
             console.log("requestToken", this.requestToken);
 
-            location.href = "https://getpocket.com/auth/authorize?request_token=" + this.requestToken + "&redirect_uri=https://localhost:4200"
+            location.href = "https://getpocket.com/auth/authorize?request_token=" + this.requestToken + "&redirect_uri=" + environment.redirectUrl
           }
         },
         (err) => {
@@ -121,7 +125,7 @@ export class PocketService {
     console.log("loading all data");
     this.list = [];
     let tags = [];
-    this.http.post("/v3/get", {
+    this.http.post(environment.pocketApiUrl + "v3/get", {
       "consumer_key": this.consumerKey,
       "access_token": this.accessToken,
       "detailType": "complete",
@@ -157,8 +161,7 @@ export class PocketService {
       this.filteredList = this.list;
       console.log(this.filteredList);
       localStorage.setItem("pocket-lastUpdateTime", JSON.stringify(this.lastUpdateTime));
-      localStorage.setItem("pocket-tags", JSON.stringify(this.tags));
-      localStorage.setItem("pocket-list", JSON.stringify(this.list));
+      this.saveToLocalStorage();
       console.log("loading all data done");
     })
   }
@@ -208,5 +211,10 @@ export class PocketService {
     let boolean = this.lastUpdateTime < (Date.now() / 1000) - (60 * 5);
     console.log("Data outdated: " + boolean);
     return boolean // if last time update was more than 5 min ago
+  }
+
+  private saveToLocalStorage() {
+    localStorage.setItem("pocket-tags", JSON.stringify(this.tags));
+    localStorage.setItem("pocket-list", JSON.stringify(this.list));
   }
 }
