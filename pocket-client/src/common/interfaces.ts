@@ -51,7 +51,8 @@ export interface Image {
 export interface AddTagModalData {
   itemId: number,
   title: string,
-  tags: string[]
+  tags: string[],
+  allTags
 }
 
 export interface Tag {

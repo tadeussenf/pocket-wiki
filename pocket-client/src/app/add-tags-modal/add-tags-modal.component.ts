@@ -1,8 +1,8 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnInit, Input} from '@angular/core';
 import {MAT_DIALOG_DATA, MatChipInputEvent, MatDialogRef} from "@angular/material";
 import {PocketService} from "../pocket.service";
 import {ENTER} from '@angular/cdk/keycodes';
-import {AddTagModalData} from "../../common/interfaces";
+import {AddTagModalData, Tag} from "../../common/interfaces";
 
 const COMMA = 188;
 
@@ -22,6 +22,8 @@ export class AddTagsModalComponent implements OnInit {
   constructor(public dialogRef: MatDialogRef<AddTagsModalComponent>,
               @Inject(MAT_DIALOG_DATA) public data: AddTagModalData,
               public pocket: PocketService) {
+    console.log("construct");
+    this.data.allTags;
   }
 
   add(event: MatChipInputEvent): void {
@@ -35,7 +37,6 @@ export class AddTagsModalComponent implements OnInit {
   }
 
   remove(tag: any): void {
-    console.log(event);
     console.log("remove");
     let index = this.data.tags.indexOf(tag);
 

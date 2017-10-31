@@ -71,11 +71,13 @@ export class AppComponent implements OnInit {
       data: {
         itemId: itemId,
         title: title,
-        tags: tags
+        tags: tags,
+        allTags: this.tags
       }
     });
 
     dialogRef.afterClosed().subscribe((result: AddTagModalData) => {
+      console.log(result);
       if (result) {
         this.pocket.addTags(result.itemId, result.tags);
       }

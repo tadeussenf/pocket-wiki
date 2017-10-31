@@ -23,7 +23,8 @@ export class PocketService {
   lastUpdateTime: number;
   list: Item[] = [];
   filteredList: Item[];
-  tags: Tag[];
+  tags: Tag[] = [];
+  private refreshDataInterval: number = 1;
 
   // observable stuff
   item$ = new ReplaySubject(1);
@@ -36,19 +37,26 @@ export class PocketService {
     this.lastUpdateTime = parseInt(localStorage.getItem("pocket-lastUpdateTime"));
     this.username = localStorage.getItem("pocket-username");
     this.accessToken = localStorage.getItem("pocket-accessToken");
-    this.tags = JSON.parse(localStorage.getItem("pocket-tags"));
-    this.list = JSON.parse(localStorage.getItem("pocket-list"));
 
     // not authenticated
     if (!this.accessToken || !this.username) {
       // todo delete data or inform user that pocket auth has been lost
-      this.authenticateWithPocket()
-    } else if (!this.list || this.list.length < 1 || !this.tags || this.tags.length < 1 || this.dataOutdated()) {
-      this.loadAllItems()
+      this.authenticateWithPocket();
+      return;
+    } else if (this.dataOutdated()) {
+      this.loadAllItems();
+      return;
+    }
+
+    this.tags = JSON.parse(localStorage.getItem("pocket-tags"));
+    this.list = JSON.parse(localStorage.getItem("pocket-list"));
+
+    if (!this.list || this.list.length < 1 || !this.tags || this.tags.length < 1) {
+      this.loadAllItems();
+      return;
     }
 
     console.log("sorting all items");
-    this.list = _.orderBy(this.list, ['time_added'], ['desc']);
     this.filteredList = this.list;
     console.log(this.filteredList);
     this.item$.next(this.filteredList);
@@ -99,7 +107,8 @@ export class PocketService {
           this.username = response.username;
           this.accessToken = response.access_token;
           localStorage.setItem("pocket-accessToken", this.accessToken);
-          localStorage.setItem("pocket-username", this.username)
+          localStorage.setItem("pocket-username", this.username);
+          this.loadAllItems();
         },
         (err) => {
           console.log("error while authorizing");
@@ -200,7 +209,7 @@ export class PocketService {
   }
 
   private dataOutdated(): boolean {
-    let boolean = this.lastUpdateTime < (Date.now() / 1000) - (60 * 5);
+    let boolean = this.lastUpdateTime < (Date.now() / 1000) - (60 * this.refreshDataInterval);
     console.log("Data outdated: " + boolean);
     return boolean // if last time update was more than 5 min ago
   }
@@ -235,6 +244,7 @@ export class PocketService {
     });
 
     this.tags = _.orderBy(this.tags, ['count'], ['desc']);
+    this.list = _.orderBy(this.list, ['time_added'], ['desc']);
     this.filteredList = this.list;
 
     console.log(this.tags);

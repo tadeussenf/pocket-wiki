@@ -8,20 +8,27 @@
         {{tag}}
         <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
       </mat-chip>
-      <input placeholder="New fruit..."
+      <input placeholder="Tag this item"
              [matChipInputFor]="chipList"
              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
              [matChipInputAddOnBlur]="addOnBlur"
-             (matChipInputTokenEnd)="add($event)" />
+             (matChipInputTokenEnd)="add($event)"
+             [matAutocomplete]="auto"/>
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let tag of data.allTags" [value]="tag.name">
+          {{ tag.name }}
+        </mat-option>
+      </mat-autocomplete>
     </mat-chip-list>
   </mat-form-field>
 
-  <!--<mat-selection-list>-->
-    <!--<mat-list-option *ngFor="let tag of pocket.getTags()">-->
-      <!--<span>{{tag.name}}</span>-->
-      <!--<span style="float: right;">{{tag.count}}</span>-->
-    <!--</mat-list-option>-->
-  <!--</mat-selection-list>-->
+  <!--<form class="example-form">-->
+  <!--<mat-form-field class="example-full-width">-->
+  <!--<input type="text" placeholder="Pick one" aria-label="Number" matInput [formControl]="myControl" [matAutocomplete]="auto">-->
+
+  <!--</mat-form-field>-->
+  <!--</form>-->
+
 
 </div>
 <div mat-dialog-actions>

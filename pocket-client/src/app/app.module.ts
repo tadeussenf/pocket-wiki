@@ -2,6 +2,7 @@ import {NgModule} from '@angular/core';
 import {AppComponent} from './app.component';
 import {DndModule} from "ng2-dnd";
 import {
+  MatAutocompleteModule,
   MatButtonModule, MatCardModule, MatCheckboxModule, MatChipsModule, MatDialog, MatDialogModule, MatFormFieldModule,
   MatIconModule,
   MatListModule,
@@ -29,6 +30,7 @@ import {FormsModule} from "@angular/forms";
     MatMenuModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
+    MatAutocompleteModule,
     MatCheckboxModule,
     MatIconModule,
     MatChipsModule,
