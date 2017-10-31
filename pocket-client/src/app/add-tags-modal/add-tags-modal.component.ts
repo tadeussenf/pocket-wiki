@@ -1,8 +1,8 @@
-import {Component, Inject, OnInit, Input} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, Inject, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatChipInputEvent, MatDialogRef} from "@angular/material";
 import {PocketService} from "../pocket.service";
 import {ENTER} from '@angular/cdk/keycodes';
-import {AddTagModalData, Tag} from "../../common/interfaces";
+import {AddTagModalData} from "../../common/interfaces";
 
 const COMMA = 188;
 
@@ -11,19 +11,32 @@ const COMMA = 188;
   templateUrl: './add-tags-modal.component.html',
   styleUrls: ['./add-tags-modal.component.scss']
 })
-export class AddTagsModalComponent implements OnInit {
+export class AddTagsModalComponent implements AfterViewInit {
+  @ViewChild('input') input: ElementRef;
   selectable: boolean = true;
   removable: boolean = true;
   addOnBlur: boolean = true;
-  separatorKeysCodes = [COMMA];
+  separatorKeysCodes = [COMMA, ENTER];
 
   // todo save data on ENTER
 
   constructor(public dialogRef: MatDialogRef<AddTagsModalComponent>,
               @Inject(MAT_DIALOG_DATA) public data: AddTagModalData,
               public pocket: PocketService) {
-    console.log("construct");
-    this.data.allTags;
+  }
+
+  ngAfterViewInit() {
+    this.input.nativeElement.focus();
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onKeyDownHandler(event: KeyboardEvent) {
+    console.log(event);
+    if (event.keyCode === ENTER) {
+      console.log("true");
+      console.log(this.data);
+      this.dialogRef.close(this.data)
+    }
   }
 
   add(event: MatChipInputEvent): void {
@@ -43,9 +56,6 @@ export class AddTagsModalComponent implements OnInit {
     if (index >= 0) {
       this.data.tags.splice(index, 1);
     }
-  }
-
-  ngOnInit() {
   }
 
   onNoClick(): void {

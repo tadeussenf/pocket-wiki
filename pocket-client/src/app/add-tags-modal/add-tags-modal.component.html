@@ -1,4 +1,5 @@
 <h1 mat-dialog-title>{{data.title}}</h1>
+<p><i>Tab to add a tag, Enter to save item</i></p>
 <div mat-dialog-content>
 
   <mat-form-field class="demo-chip-list">
@@ -8,7 +9,7 @@
         {{tag}}
         <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
       </mat-chip>
-      <input placeholder="Tag this item"
+      <input #input matInput placeholder="Tag this item"
              [matChipInputFor]="chipList"
              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
              [matChipInputAddOnBlur]="addOnBlur"
@@ -21,14 +22,6 @@
       </mat-autocomplete>
     </mat-chip-list>
   </mat-form-field>
-
-  <!--<form class="example-form">-->
-  <!--<mat-form-field class="example-full-width">-->
-  <!--<input type="text" placeholder="Pick one" aria-label="Number" matInput [formControl]="myControl" [matAutocomplete]="auto">-->
-
-  <!--</mat-form-field>-->
-  <!--</form>-->
-
 
 </div>
 <div mat-dialog-actions>

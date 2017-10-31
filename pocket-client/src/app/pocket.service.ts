@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
-import {Tag, Item} from "../common/interfaces";
+import {Item, Tag} from "../common/interfaces";
 import {Headers, Http, RequestOptionsArgs} from "@angular/http";
 import * as _ from 'lodash';
 import {environment} from "../environments/environment";
-import {Subject} from "rxjs/Subject";
 import {ReplaySubject} from "rxjs/ReplaySubject";
 
 @Injectable()
@@ -24,7 +23,7 @@ export class PocketService {
   list: Item[] = [];
   filteredList: Item[];
   tags: Tag[] = [];
-  private refreshDataInterval: number = 1;
+  private refreshDataInterval: number = 5;
 
   // observable stuff
   item$ = new ReplaySubject(1);
