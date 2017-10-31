@@ -53,3 +53,8 @@ export interface AddTagModalData {
   title: string,
   tags: string[]
 }
+
+export interface Tag {
+  name: string;
+  count: number
+}

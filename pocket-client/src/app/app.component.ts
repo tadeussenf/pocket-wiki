@@ -2,7 +2,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Http, RequestOptionsArgs, Headers} from "@angular/http";
 import * as _ from 'lodash';
-import {AddTagModalData, Item} from "common/interfaces";
+import {AddTagModalData, Item, Tag} from "common/interfaces";
 import {PocketService} from "./pocket.service";
 import {MatDialog} from "@angular/material";
 import {AddTagsModalComponent} from "./add-tags-modal/add-tags-modal.component";
@@ -13,58 +13,57 @@ import {AddTagsModalComponent} from "./add-tags-modal/add-tags-modal.component";
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  showSpinner: boolean = false;
+  showSpinner: boolean = true;
   username: any;
   list: Item[] = [];
-  filteredList: Item[];
-  tags: { name: any; count: number }[];
+  filteredList: Item[] = [];
+  tags: Tag[] = [];
 
   constructor(private pocket: PocketService, public dialog: MatDialog) {
 
   }
 
   ngOnInit(): void {
-    this.loadData()
+    this.pocket.getItemsSub().subscribe((items: Item[]) => {
+      console.log("recieved items", items);
+      this.filteredList = items;
+
+      // todo use combineLatest
+      this.pocket.getTagSub().subscribe((tags: Tag[]) => {
+        console.log("recieved tags", tags);
+        this.tags = tags;
+        this.showSpinner = false;
+      })
+    });
   }
 
-  public refresh() {
+  public refreshData() {
     this.filteredList = [];
     this.tags = [];
     this.showSpinner = true;
     this.pocket.loadAllItems();
-    this.loadData();
-    this.showSpinner = false;
 
   }
 
   filterByTag(tag: string) {
     this.pocket.showItemsForTag(tag);
-    this.loadData();
   }
 
   resetFilter() {
     this.pocket.resetFilter();
-    this.loadData();
   }
 
   filterByDate(days: number) {
     this.pocket.filterByDate(days);
-    this.loadData();
   }
 
   filterNoTags() {
     this.pocket.filterNoTags();
-    this.loadData()
   }
 
-  simpleDrop($event: Event) {
-    console.log($event);
-  }
-
-  private loadData() {
-    this.filteredList = this.pocket.getItems();
-    this.tags = this.pocket.getTags();
-  }
+  // simpleDrop($event: Event) {
+  //   console.log($event);
+  // }
 
   showAddTagsModal(itemId: number, title: string, tags: string[]): void {
     let dialogRef = this.dialog.open(AddTagsModalComponent, {

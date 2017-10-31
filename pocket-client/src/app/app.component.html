@@ -1,5 +1,12 @@
 <!--sidebar-->
-<mat-sidenav-container>
+<div class="spinner" *ngIf="showSpinner === true">
+  <div>
+    <mat-progress-spinner mode="indeterminate">gfdgfd</mat-progress-spinner>
+    <p>Loading...</p>
+  </div>
+</div>
+
+<mat-sidenav-container fullscreen *ngIf="showSpinner === false">
   <mat-sidenav mode="side" opened="true">
 
     <mat-toolbar>
@@ -36,15 +43,12 @@
       <span class="spacer"></span>
       <!--todo show as cards instead of list-->
       <!--todo show archived items-->
-      <mat-icon (click)="refresh()">refresh</mat-icon>
+      <mat-icon (click)="refreshData()">refresh</mat-icon>
     </mat-toolbar>
-
-    <!-- todo makes no sense because rxjs is not implemented yet-->
-    <mat-progress-bar mode="indeterminate" *ngIf="filteredList.length === 0 && showSpinner"></mat-progress-bar>
 
     <!--item list-->
     <!--todo odd even background-->
-    <mat-list *ngIf="filteredList.length > 0 && !showSpinner">
+    <mat-list>
       <mat-list-item *ngFor="let item of filteredList" dnd-draggable [dragEnabled]="true">
 
         <!--<mat-checkbox matListIcon></mat-checkbox>-->

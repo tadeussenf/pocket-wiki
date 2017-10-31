@@ -1,35 +1,39 @@
 import {Injectable} from '@angular/core';
-import {Item} from "../common/interfaces";
-import {Http, RequestOptionsArgs, Headers} from "@angular/http";
+import {Tag, Item} from "../common/interfaces";
+import {Headers, Http, RequestOptionsArgs} from "@angular/http";
 import * as _ from 'lodash';
 import {environment} from "../environments/environment";
+import {Subject} from "rxjs/Subject";
+import {ReplaySubject} from "rxjs/ReplaySubject";
 
 @Injectable()
 export class PocketService {
-  lastUpdateTime: any;
-  username: any;
-  accessToken: any;
-  title = 'app';
-  consumerKey = "71520-12304220fa8fcbd039b9be34";
-  headers: Headers = new Headers({
+  // auth stuff
+  private accessToken: any;
+  private consumerKey = "71520-12304220fa8fcbd039b9be34";
+  private headers: Headers = new Headers({
     'Content-Type': 'application/json',
     'X-Accept': 'application/json'
   });
+  private options: RequestOptionsArgs = {'headers': this.headers};
   private requestToken: string;
-  authBody = {
-    "consumer_key": this.consumerKey,
-    "access_token": this.accessToken
-  };
+
+  // data stuff
+  username: string;
+  lastUpdateTime: number;
   list: Item[] = [];
   filteredList: Item[];
-  options: RequestOptionsArgs = {'headers': this.headers};
-  tags: { name: any; count: number }[];
+  tags: Tag[];
+
+  // observable stuff
+  item$ = new ReplaySubject(1);
+  tag$ = new ReplaySubject(1);
 
   constructor(private http: Http) {
     console.log("init service");
     console.log(environment);
 
-    this.lastUpdateTime = localStorage.getItem("pocket-lastUpdateTime");
+    this.lastUpdateTime = parseInt(localStorage.getItem("pocket-lastUpdateTime"));
     this.username = localStorage.getItem("pocket-username");
     this.accessToken = localStorage.getItem("pocket-accessToken");
     this.tags = JSON.parse(localStorage.getItem("pocket-tags"));
@@ -47,6 +51,8 @@ export class PocketService {
     this.list = _.orderBy(this.list, ['time_added'], ['desc']);
     this.filteredList = this.list;
     console.log(this.filteredList);
+    this.item$.next(this.filteredList);
+    this.tag$.next(this.tags);
   }
 
   addTags(itemId: number, tags: string[]) {
@@ -66,7 +72,7 @@ export class PocketService {
       .subscribe(
         res => {
           // todo add tags to local copy
-          this.saveToLocalStorage();
+          this.saveAllDataToLocalStorage();
           console.log(res.json());
         },
         err => {
@@ -81,6 +87,7 @@ export class PocketService {
 
     // recieved pocket auth callback
     if (this.requestToken) {
+      // todo: getAccessToken()
       console.log("found requestToken in LS");
       this.http.post(environment.pocketApiUrl + "v3/oauth/authorize", {
         "consumer_key": this.consumerKey,
@@ -100,6 +107,7 @@ export class PocketService {
         }
       )
     } else {
+      // todo: getRequestToken()
       this.http.post(environment.pocketApiUrl + "v3/oauth/request", {
         "consumer_key": this.consumerKey,
         "redirect_uri": environment.redirectUrl
@@ -124,7 +132,6 @@ export class PocketService {
   public loadAllItems() {
     console.log("loading all data");
     this.list = [];
-    let tags = [];
     this.http.post(environment.pocketApiUrl + "v3/get", {
       "consumer_key": this.consumerKey,
       "access_token": this.accessToken,
@@ -134,35 +141,16 @@ export class PocketService {
     }).subscribe((res) => {
       let response = res.json();
       this.lastUpdateTime = response.since;
-      let json = response.list;
 
-      for (let item in json) {
-        json[item].customTags = [];
+      // extract and count tags
+      this.extractDataFromReponse(response);
 
-        for (let tag in json[item].tags) {
-          json[item].customTags.push(tag);
-          if (!tags.includes(tag)) {
-            tags.push(tag)
-          }
-        }
-
-        this.list.push(json[item]);
-      }
-
-      this.tags = tags.map((tag) => {
-        return {name: tag, count: _.filter(this.list, item => item.customTags.includes(tag)).length}
-      });
-
-      this.tags = _.orderBy(this.tags, ['count'], ['desc']);
-
-      // todo fix semantics of tags and tags (tags not really needed)
-      console.log(this.tags);
-
-      this.filteredList = this.list;
-      console.log(this.filteredList);
       localStorage.setItem("pocket-lastUpdateTime", JSON.stringify(this.lastUpdateTime));
-      this.saveToLocalStorage();
+      this.saveAllDataToLocalStorage();
       console.log("loading all data done");
+
+      this.item$.next(this.filteredList);
+      this.tag$.next(this.tags);
     })
   }
 
@@ -172,6 +160,7 @@ export class PocketService {
     });
 
     console.log(this.filteredList);
+    this.item$.next(this.filteredList);
   }
 
   filterByDate(days: number) {
@@ -183,28 +172,31 @@ export class PocketService {
         return parseInt(item.time_added) > range;
       })
     }
+    this.item$.next(this.filteredList);
   }
 
   filterNoTags() {
     this.filteredList = _.filter(this.list, (item) => {
       return item.customTags.length === 0;
-    })
+    });
+    this.item$.next(this.filteredList);
   }
 
   simpleDrop($event: Event) {
     console.log($event);
   }
 
-  getItems() {
-    return this.filteredList;
+  getItemsSub() {
+    return this.item$;
   }
 
-  getTags() {
-    return this.tags;
+  getTagSub() {
+    return this.tag$;
   }
 
   resetFilter() {
     this.filteredList = this.list;
+    this.item$.next(this.filteredList);
   }
 
   private dataOutdated(): boolean {
@@ -213,8 +205,39 @@ export class PocketService {
     return boolean // if last time update was more than 5 min ago
   }
 
-  private saveToLocalStorage() {
+  private saveAllDataToLocalStorage() {
     localStorage.setItem("pocket-tags", JSON.stringify(this.tags));
     localStorage.setItem("pocket-list", JSON.stringify(this.list));
+  }
+
+  private extractDataFromReponse(response) {
+    console.log("extractDataFromReponse");
+    let tags = [];
+    let json = response.list;
+
+    // get tag list from all items
+    for (let item in json) {
+      json[item].customTags = [];
+
+      for (let tag in json[item].tags) {
+        json[item].customTags.push(tag);
+        if (!tags.includes(tag)) {
+          tags.push(tag)
+        }
+      }
+
+      this.list.push(json[item]);
+    }
+
+    // get item per tag count
+    this.tags = tags.map((tag) => {
+      return {name: tag, count: _.filter(this.list, item => item.customTags.includes(tag)).length}
+    });
+
+    this.tags = _.orderBy(this.tags, ['count'], ['desc']);
+    this.filteredList = this.list;
+
+    console.log(this.tags);
+    console.log(this.filteredList);
   }
 }

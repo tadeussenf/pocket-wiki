@@ -6,7 +6,7 @@ import {
   MatIconModule,
   MatListModule,
   MatMenuModule,
-  MatProgressBarModule,
+  MatProgressBarModule, MatProgressSpinnerModule,
   MatSidenavModule,
   MatToolbarModule
 } from "@angular/material";
@@ -28,6 +28,7 @@ import {FormsModule} from "@angular/forms";
     BrowserAnimationsModule,
     MatMenuModule,
     MatProgressBarModule,
+    MatProgressSpinnerModule,
     MatCheckboxModule,
     MatIconModule,
     MatChipsModule,

@@ -48,6 +48,7 @@ export class AddTagsModalComponent implements OnInit {
   }
 
   onNoClick(): void {
+    // todo will also add tag on cancel
     this.dialogRef.close();
   }
 
