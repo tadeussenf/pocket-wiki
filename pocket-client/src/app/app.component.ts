@@ -1,11 +1,9 @@
-///<reference path="../../node_modules/@angular/core/src/metadata/lifecycle_hooks.d.ts"/>
 import {Component, OnInit} from '@angular/core';
-import {Http, RequestOptionsArgs, Headers} from "@angular/http";
-import * as _ from 'lodash';
 import {AddTagModalData, Item, Tag} from "common/interfaces";
 import {PocketService} from "./pocket.service";
 import {MatDialog} from "@angular/material";
 import {AddTagsModalComponent} from "./add-tags-modal/add-tags-modal.component";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-root',
@@ -24,17 +22,16 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.pocket.getItemsSub().subscribe((items: Item[]) => {
-      console.log("recieved items", items);
-      this.filteredList = items;
-
-      // todo use combineLatest
-      this.pocket.getTagSub().subscribe((tags: Tag[]) => {
-        console.log("recieved tags", tags);
+    Observable.combineLatest(this.pocket.getItemsSub(), this.pocket.getTagSub())
+      .subscribe((values: any) => {
+        console.log(values);
+        let [items, tags] = values;
+        this.filteredList = items;
         this.tags = tags;
+        console.log("recieved items", items);
+        console.log("recieved tags", tags);
         this.showSpinner = false;
-      })
-    });
+      });
   }
 
   public refreshData() {
