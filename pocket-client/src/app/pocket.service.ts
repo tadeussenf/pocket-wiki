@@ -23,7 +23,7 @@ export class PocketService {
   list: Item[] = [];
   filteredList: Item[];
   tags: Tag[] = [];
-  private refreshDataInterval: number = 5;
+  private refreshDataInterval: number = 60; // minutes
 
   // observable stuff
   item$ = new ReplaySubject(1);
@@ -63,7 +63,7 @@ export class PocketService {
   }
 
   addTags(itemId: number, tags: string[]) {
-    console.log(tags.toString());
+    console.log("adding tags", tags.toString());
     let body = {
       "consumer_key": this.consumerKey,
       "access_token": this.accessToken,

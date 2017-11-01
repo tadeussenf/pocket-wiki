@@ -24,14 +24,26 @@
     <!--tags-list-->
     <div class="tags-list">
       <h4>Tags ({{tags.length}})</h4>
-      <ul *ngIf="tags && tags.length > 0">
-        <li *ngFor="let tag of tags" dnd-droppable (onDropSuccess)="simpleDrop($event)">
-          <a style="cursor: pointer" (click)="filterByTag(tag.name)">
-            <span>{{tag.name}}</span>
-            <span style="float: right">{{tag.count}}</span>
-          </a>
-        </li>
-      </ul>
+
+      <!--<mat-list>-->
+      <!--<mat-list-item-->
+      <!---->
+      <!--&gt;-->
+      <button mat-button *ngFor="let tag of tags" (click)="filterByTag(tag.name)">
+        <span class="name">{{tag.name}}</span>
+        <small class="count">{{tag.count}}</small>
+      </button>
+      <!--</mat-list-item>-->
+      <!--</mat-list>-->
+
+
+      <!--<ul *ngIf="tags && tags.length > 0">-->
+      <!--<li dnd-droppable (onDropSuccess)="simpleDrop($event)">-->
+      <!--<a style="cursor: pointer" ">-->
+
+      <!--</a>-->
+      <!--</li>-->
+      <!--</ul>-->
     </div>
   </mat-sidenav>
 
@@ -39,7 +51,7 @@
   <mat-sidenav-content>
 
     <mat-toolbar>
-      <span>{{filteredList.length}} items</span>
+      <span class="content-title">{{filteredList.length}} items</span>
       <span class="spacer"></span>
       <!--todo show as cards instead of list-->
       <!--todo show archived items-->
@@ -66,6 +78,7 @@
           <mat-chip *ngFor="let tag of item.customTags">
             <a style="cursor: pointer" (click)="filterByTag(tag)">{{tag}}</a>
           </mat-chip>
+          <span>Edit tags</span>
         </mat-chip-list>
 
         <!--<mat-icon>done</mat-icon>-->

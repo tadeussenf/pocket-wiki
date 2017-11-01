@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {AddTagModalData, Item, Tag} from "common/interfaces";
 import {PocketService} from "./pocket.service";
 import {MatDialog} from "@angular/material";
@@ -8,7 +8,8 @@ import {Observable} from "rxjs";
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class AppComponent implements OnInit {
   showSpinner: boolean = true;
