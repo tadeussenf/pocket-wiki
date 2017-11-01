@@ -18,6 +18,9 @@ export class AppComponent implements OnInit {
   filteredList: Item[] = [];
   tags: Tag[] = [];
 
+  // todo search items
+  // todo show urls
+
   constructor(private pocket: PocketService, public dialog: MatDialog) {
 
   }

@@ -25,25 +25,11 @@
     <div class="tags-list">
       <h4>Tags ({{tags.length}})</h4>
 
-      <!--<mat-list>-->
-      <!--<mat-list-item-->
-      <!---->
-      <!--&gt;-->
       <button mat-button *ngFor="let tag of tags" (click)="filterByTag(tag.name)">
         <span class="name">{{tag.name}}</span>
         <small class="count">{{tag.count}}</small>
       </button>
-      <!--</mat-list-item>-->
-      <!--</mat-list>-->
 
-
-      <!--<ul *ngIf="tags && tags.length > 0">-->
-      <!--<li dnd-droppable (onDropSuccess)="simpleDrop($event)">-->
-      <!--<a style="cursor: pointer" ">-->
-
-      <!--</a>-->
-      <!--</li>-->
-      <!--</ul>-->
     </div>
   </mat-sidenav>
 
@@ -61,24 +47,28 @@
     <!--item list-->
     <!--todo odd even background-->
     <mat-list>
-      <mat-list-item *ngFor="let item of filteredList" dnd-draggable [dragEnabled]="true">
-
-        <!--<mat-checkbox matListIcon></mat-checkbox>-->
+      <mat-list-item *ngFor="let item of filteredList" class="item">
 
         <div matLine>
-          <a href="{{item.given_url}}" target="_blank">
-            <b>{{item.resolved_title}}</b>
+          <a *ngIf="item" href="{{item.given_url}}" target="_blank">
+            <b *ngIf="item.resolved_title != ''" class="title">{{item.resolved_title}}</b>
+            <b *ngIf="item.resolved_title === ''" class="title">{{item.given_title}}</b>
           </a>
-          <small><i>{{item.time_added + '000' | date}}</i></small>
+          <small class="date-added"><i>{{item.time_added + '000' | date}}</i></small>
         </div>
 
-        <p class="excerpt" matLine><i>{{item.excerpt}}</i></p>
+        <a matLine class="url" href="{{item.given_url}}" target="_blank">
+          <small><p>{{item.given_url}}</p></small>
+        </a>
+
+        <i matLine class="excerpt">
+          <p>{{item.excerpt}} </p>
+        </i>
 
         <mat-chip-list matLine>
           <mat-chip *ngFor="let tag of item.customTags">
             <a style="cursor: pointer" (click)="filterByTag(tag)">{{tag}}</a>
           </mat-chip>
-          <span>Edit tags</span>
         </mat-chip-list>
 
         <!--<mat-icon>done</mat-icon>-->

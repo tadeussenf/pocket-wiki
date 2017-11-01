@@ -30,15 +30,6 @@ mat-sidenav-container {
     flex: 1;
   }
 
-  .excerpt {
-    white-space: inherit;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    i {
-      font-size: 13px;
-    }
-  }
-
   .filter-actions {
     button {
       display: block;
@@ -70,5 +61,23 @@ mat-sidenav-container {
       }
     }
 
+  }
+
+  .item {
+
+    p {
+      margin-top: 0;
+      margin-bottom: 4px;
+      white-space: inherit;
+    }
+
+    .url {
+    }
+
+    .excerpt {
+      i {
+        font-size: 13px;
+      }
+    }
   }
 }

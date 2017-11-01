@@ -16,7 +16,7 @@ import {HttpModule} from "@angular/http";
 import {BrowserModule} from "@angular/platform-browser";
 import {PocketService} from "./pocket.service";
 import {AddTagsModalComponent} from './add-tags-modal/add-tags-modal.component';
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -42,6 +42,7 @@ import {FormsModule} from "@angular/forms";
     MatDialogModule,
     MatFormFieldModule,
     FormsModule,
+    ReactiveFormsModule,
     DndModule.forRoot()
   ],
   providers: [
