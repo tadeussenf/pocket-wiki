@@ -72,8 +72,11 @@
         </mat-chip-list>
 
         <!--<mat-icon>done</mat-icon>-->
-        <mat-icon (click)="showAddTagsModal(item.item_id, item.resolved_title, item.customTags )">bookmark_border
-        </mat-icon>
+        <button mat-icon-button (click)="showAddTagsModal(item.item_id, item.resolved_title, item.customTags )">
+          <mat-icon>bookmark_border
+          </mat-icon>
+        </button>
+
         <!--<mat-icon>delete</mat-icon>-->
 
       </mat-list-item>

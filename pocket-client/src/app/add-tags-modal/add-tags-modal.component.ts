@@ -1,11 +1,14 @@
-import {AfterViewInit, Component, ElementRef, HostListener, Inject, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatChipInputEvent, MatDialogRef, MatInput} from "@angular/material";
+import {AfterViewInit, Component, ElementRef, HostListener, Inject, OnDestroy, ViewChild} from '@angular/core';
+import {MAT_DIALOG_DATA, MatChipInputEvent, MatChipList, MatDialogRef, MatInput} from "@angular/material";
 import {PocketService} from "../pocket.service";
 import {ENTER} from '@angular/cdk/keycodes';
 import {AddTagModalData, Tag} from "../../common/interfaces";
 import {FormControl} from "@angular/forms";
 import * as _ from 'lodash';
 import "rxjs/add/operator/map";
+import {Subscription} from "rxjs/Subscription";
+import {TAB} from "@angular/cdk/keycodes";
+import "rxjs/add/operator/throttleTime";
 
 const COMMA = 188;
 
@@ -14,38 +17,45 @@ const COMMA = 188;
   templateUrl: './add-tags-modal.component.html',
   styleUrls: ['./add-tags-modal.component.scss']
 })
-export class AddTagsModalComponent implements AfterViewInit {
+export class AddTagsModalComponent implements AfterViewInit, OnDestroy {
+
   @ViewChild('input') input: ElementRef;
+  @ViewChild('chipList') chipList: MatChipList;
   tagInput: FormControl = new FormControl();
   selectable: boolean = true;
   removable: boolean = true;
   addOnBlur: boolean = true;
   separatorKeysCodes = [COMMA];
+  private oldTags: string[];
   private tags: Tag[];
   filteredTags: Tag[];
+  private tagInputSub: Subscription;
 
-  // todo save data on ENTER
   // we need to do some ugly stuff in order to get both chips and autocomplete working
+  // todo use https://github.com/Gbuomprisco/ngx-chips
 
   constructor(public dialogRef: MatDialogRef<AddTagsModalComponent>,
               @Inject(MAT_DIALOG_DATA) public data: AddTagModalData,
               public pocket: PocketService) {
     this.tags = this.data.allTags;
-    this.filteredTags = this.tags;
+    this.filteredTags = [];
+    this.oldTags = this.data.tags;
   }
 
   ngAfterViewInit() {
-    this.tagInput.valueChanges
+    this.tagInputSub = this.tagInput.valueChanges
+      .throttleTime(500)
       .subscribe(val => {
-        console.log(val);
-        this.filteredTags = val ? _.filter(this.tags, item => item.name.startsWith(val)) : this.tags;
+        this.filteredTags = val ? _.filter(this.tags, item => item.name.startsWith(val)) : [];
       });
+    setTimeout(() => {
+      this.chipList._focusInput();
+    }, 1000);
+    console.log("view init");
   }
 
   add(event: MatChipInputEvent): void {
     console.log("add", event.value);
-    console.log(event.value.length);
-    console.log(this.data.tags.includes(event.value));
     if (event.value.length > 0 && !this.data.tags.includes(event.value)) {
       console.log("add value", event.value);
       this.data.tags.push(event.value);
@@ -77,7 +87,11 @@ export class AddTagsModalComponent implements AfterViewInit {
   }
 
   onNoClick(): void {
-    // todo will also add tag on cancel
+    this.data.tags = this.oldTags;
     this.dialogRef.close();
+  }
+
+  ngOnDestroy(): void {
+    this.tagInputSub.unsubscribe();
   }
 }

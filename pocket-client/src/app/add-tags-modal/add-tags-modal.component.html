@@ -5,7 +5,7 @@
   <form  #heroForm="ngForm" (ngSubmit)="doSubmit()">
     <mat-form-field class="demo-chip-list">
       <mat-chip-list #chipList>
-        <mat-chip *ngFor="let tag of data.tags" [selectable]="selectable"
+        <mat-chip *ngFor="let tag of data.tags" [selectable]="selectable" [selected]="false"
                   [removable]="removable" (remove)="remove(tag)">
           {{tag}}
           <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
@@ -28,6 +28,6 @@
 
 </div>
 <div mat-dialog-actions>
-  <button mat-button type="submit" tabindex="2">Save</button>
+  <button mat-button (click)="doSubmit()" tabindex="2">Save</button>
   <button mat-button (click)="onNoClick()" tabindex="-1">Cancel</button>
 </div>
