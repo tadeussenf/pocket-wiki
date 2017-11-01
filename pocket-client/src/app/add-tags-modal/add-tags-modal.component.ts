@@ -1,14 +1,14 @@
-import {AfterViewInit, Component, ElementRef, HostListener, Inject, OnDestroy, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatChipInputEvent, MatChipList, MatDialogRef, MatInput} from "@angular/material";
+import {AfterViewInit, Component, ElementRef, Inject, OnDestroy, ViewChild} from '@angular/core';
+import {MAT_DIALOG_DATA, MatChipInputEvent, MatChipList, MatDialogRef} from "@angular/material";
 import {PocketService} from "../pocket.service";
-import {ENTER} from '@angular/cdk/keycodes';
 import {AddTagModalData, Tag} from "../../common/interfaces";
 import {FormControl} from "@angular/forms";
 import * as _ from 'lodash';
 import "rxjs/add/operator/map";
 import {Subscription} from "rxjs/Subscription";
-import {TAB} from "@angular/cdk/keycodes";
 import "rxjs/add/operator/throttleTime";
+import "rxjs/add/operator/debounce";
+import "rxjs/add/operator/debounceTime";
 
 const COMMA = 188;
 
@@ -44,7 +44,7 @@ export class AddTagsModalComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.tagInputSub = this.tagInput.valueChanges
-      .throttleTime(500)
+      .debounceTime(300)
       .subscribe(val => {
         this.filteredTags = val ? _.filter(this.tags, item => item.name.startsWith(val)) : [];
       });

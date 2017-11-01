@@ -75,6 +75,9 @@ mat-sidenav-container {
     }
 
     .excerpt {
+      p {
+        white-space: normal;
+      }
       i {
         font-size: 13px;
       }
