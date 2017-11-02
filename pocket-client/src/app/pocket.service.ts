@@ -52,7 +52,6 @@ export class PocketService {
     this.tags = JSON.parse(localStorage.getItem("pocket-tags"));
     this.list = JSON.parse(localStorage.getItem("pocket-list"));
 
-    // todo if !lastUpdateTime
     if (this.dataOutdated() || !this.list || this.list.length < 1 || !this.tags || this.tags.length < 1) {
       this.loadAllItems(true);
       return;
@@ -327,8 +326,6 @@ export class PocketService {
       } else {
         this.tags.push({name: tag.name, count: _.filter(this.list, item => item.customTags.includes(tag.name)).length});
       }
-
-      // todo support delete case for tags
     });
   }
 

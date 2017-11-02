@@ -21,7 +21,6 @@ export class AppComponent implements OnInit {
   loadingMessage: string = "Loading";
 
   // todo search items
-  // todo show urls
 
   constructor(public pocket: PocketService, public dialog: MatDialog) {
     console.log("constructor done");
