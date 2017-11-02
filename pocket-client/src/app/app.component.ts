@@ -4,6 +4,7 @@ import {PocketService} from "./pocket.service";
 import {MatDialog} from "@angular/material";
 import {AddTagsModalComponent} from "./add-tags-modal/add-tags-modal.component";
 import {Observable} from "rxjs";
+import "rxjs/add/operator/debounceTime";
 
 @Component({
   selector: 'app-root',
@@ -17,16 +18,18 @@ export class AppComponent implements OnInit {
   list: Item[] = [];
   filteredList: Item[] = [];
   tags: Tag[] = [];
+  loadingMessage: string = "Loading";
 
   // todo search items
   // todo show urls
 
-  constructor(private pocket: PocketService, public dialog: MatDialog) {
-
+  constructor(public pocket: PocketService, public dialog: MatDialog) {
+    console.log("constructor done");
   }
 
   ngOnInit(): void {
     Observable.combineLatest(this.pocket.getItemsSub(), this.pocket.getTagSub())
+      .debounceTime(50)
       .subscribe((values: any) => {
         console.log(values);
         let [items, tags] = values;
@@ -38,11 +41,11 @@ export class AppComponent implements OnInit {
       });
   }
 
-  public refreshData() {
+  public refreshData(forceUpdate: boolean) {
     this.filteredList = [];
     this.tags = [];
     this.showSpinner = true;
-    this.pocket.loadAllItems();
+    this.pocket.loadAllItems(forceUpdate);
 
   }
 

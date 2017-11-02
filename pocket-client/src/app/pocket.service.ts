@@ -28,6 +28,7 @@ export class PocketService {
   // observable stuff
   item$ = new ReplaySubject(1);
   tag$ = new ReplaySubject(1);
+  loadingMessageSub = new ReplaySubject(1);
 
   constructor(private http: Http) {
     console.log("init service");
@@ -43,15 +44,16 @@ export class PocketService {
       this.authenticateWithPocket();
       return;
     } else if (this.dataOutdated()) {
-      this.loadAllItems();
+      this.loadAllItems(false);
       return;
     }
 
     this.tags = JSON.parse(localStorage.getItem("pocket-tags"));
     this.list = JSON.parse(localStorage.getItem("pocket-list"));
 
+    // todo if !lastUpdateTime
     if (!this.list || this.list.length < 1 || !this.tags || this.tags.length < 1) {
-      this.loadAllItems();
+      this.loadAllItems(true);
       return;
     }
 
@@ -74,7 +76,6 @@ export class PocketService {
         time: Date.now() - 1000
       }]
     };
-    console.log(body);
     this.http.post(environment.pocketApiUrl + "v3/send", body, this.options)
       .subscribe(
         res => {
@@ -95,6 +96,7 @@ export class PocketService {
     // recieved pocket auth callback
     if (this.requestToken) {
       // todo: getAccessToken()
+      this.loadingMessageSub.next("Authenticating with pocket");
       console.log("found requestToken in LS");
       this.http.post(environment.pocketApiUrl + "v3/oauth/authorize", {
         "consumer_key": this.consumerKey,
@@ -107,7 +109,7 @@ export class PocketService {
           this.accessToken = response.access_token;
           localStorage.setItem("pocket-accessToken", this.accessToken);
           localStorage.setItem("pocket-username", this.username);
-          this.loadAllItems();
+          this.loadAllItems(true);
         },
         (err) => {
           console.log("error while authorizing");
@@ -116,6 +118,7 @@ export class PocketService {
       )
     } else {
       // todo: getRequestToken()
+      this.loadingMessageSub.next("Connecting to pocket");
       this.http.post(environment.pocketApiUrl + "v3/oauth/request", {
         "consumer_key": this.consumerKey,
         "redirect_uri": environment.redirectUrl
@@ -137,32 +140,43 @@ export class PocketService {
     }
   }
 
-  public loadAllItems() {
-    console.log("loading all data");
-    this.list = [];
-    this.http.post(environment.pocketApiUrl + "v3/get", {
+  public loadAllItems(forceUpdate: boolean) {
+    this.loadingMessageSub.next("Fetching all items from pocket");
+    console.log("loading all data, force:", forceUpdate);
+
+    let body = {
       "consumer_key": this.consumerKey,
       "access_token": this.accessToken,
       "detailType": "complete",
       "state": "all",
+      "since": this.lastUpdateTime
       // "count": 10
-    }).subscribe((res) => {
-      let response = res.json();
-      this.lastUpdateTime = response.since;
+    };
 
-      // extract and count tags
-      this.extractDataFromReponse(response);
+    if (forceUpdate) {
+      this.list = [];
+      delete body.since;
+    }
 
-      localStorage.setItem("pocket-lastUpdateTime", JSON.stringify(this.lastUpdateTime));
-      this.saveAllDataToLocalStorage();
-      console.log("loading all data done");
+    this.http.post(environment.pocketApiUrl + "v3/get", body)
+      .subscribe((res) => {
+        let response = res.json();
+        this.lastUpdateTime = response.since;
 
-      this.item$.next(this.filteredList);
-      this.tag$.next(this.tags);
-    })
+        // extract and count tags
+        this.extractDataFromReponse(response.list, forceUpdate);
+
+        localStorage.setItem("pocket-lastUpdateTime", JSON.stringify(this.lastUpdateTime));
+        this.saveAllDataToLocalStorage();
+        console.log("loading all data done");
+
+        this.item$.next(this.filteredList);
+        this.tag$.next(this.tags);
+      })
   }
 
   showItemsForTag(tag: string) {
+    console.log("showItemsForTag");
     this.filteredList = _.filter(this.list, (item) => {
       return item.customTags.includes(tag);
     });
@@ -172,6 +186,7 @@ export class PocketService {
   }
 
   filterByDate(days: number) {
+    console.log("filterByDate");
     if (days === 0) {
       this.filteredList = this.list;
     } else {
@@ -184,6 +199,7 @@ export class PocketService {
   }
 
   filterNoTags() {
+    console.log("filterNoTags");
     this.filteredList = _.filter(this.list, (item) => {
       return item.customTags.length === 0;
     });
@@ -203,6 +219,7 @@ export class PocketService {
   }
 
   resetFilter() {
+    console.log("resetFilter");
     this.filteredList = this.list;
     this.item$.next(this.filteredList);
   }
@@ -214,39 +231,112 @@ export class PocketService {
   }
 
   private saveAllDataToLocalStorage() {
+    this.loadingMessageSub.next("Saving data to local storage");
     localStorage.setItem("pocket-tags", JSON.stringify(this.tags));
     localStorage.setItem("pocket-list", JSON.stringify(this.list));
   }
 
-  private extractDataFromReponse(response) {
-    console.log("extractDataFromReponse");
-    let tags = [];
-    let json = response.list;
-
+  private extractDataFromReponse(input: Item[], forceUpdate: boolean) {
     // get tag list from all items
-    for (let item in json) {
-      json[item].customTags = [];
+    this.loadingMessageSub.next("Extracting metadata");
+    console.log("extractDataFromReponse");
 
-      for (let tag in json[item].tags) {
-        json[item].customTags.push(tag);
+    let transfer = this.addCustomTagsToItems(input);
+    let list: Item[] = transfer.list;
+    let tags: string[] = transfer.tags;
+
+    // get item per tag count
+    let tagsWithCount: Tag[] = tags.map((tag: string) => {
+      return {name: tag, count: _.filter(list, item => item.customTags.includes(tag)).length}
+    });
+
+    if (!forceUpdate) {
+      console.log("merge data");
+      this.mergePartialData(list, tagsWithCount);
+    } else {
+      console.log("replace data");
+      this.tags = tagsWithCount;
+      this.list = list;
+    }
+
+    console.log("sorting tags");
+    this.tags = _.orderBy(this.tags, ['count'], ['desc']);
+    console.log("sorting items");
+    this.list = _.orderBy(this.list, ['time_added'], ['desc']);
+    this.filteredList = this.list;
+
+    console.log(this.tags);
+    console.log(this.list);
+    console.log(this.filteredList);
+  }
+
+  private mergePartialData(inputList: Item[], inputTags: Tag[]) {
+    console.log("merging items", inputList);
+    inputList.forEach((item) => {
+      let index = _.findIndex(this.list, existing => existing.item_id === item.item_id);
+
+      if (parseInt(item.status) === 2) {
+        if (this.list[index].item_id === item.item_id) {
+          console.log("deleting item with index", index, this.list[index]);
+
+          this.list[index].customTags.forEach((tagName) => {
+            let tag = _.find(this.tags, tag => tag.name === tagName);
+            let index = _.findIndex(this.tags, tag);
+            if (tag.count === 1) {
+              this.tags.splice(index, 1);
+            } else {
+              this.tags[index].count = tag.count - 1;
+            }
+          });
+
+          this.list.splice(index, 1);
+        } else {
+          console.warn("unknown error case when deleting item with index", index, this.list[index]);
+        }
+      } else if (index >= 0) {
+        this.list[index] = item;
+      } else {
+        this.list.push(item)
+      }
+
+    });
+
+    console.log("merging tags");
+    inputTags.forEach((tag) => {
+      let index = _.findIndex(this.tags, existing => existing.name === tag.name);
+      if (index >= 0) {
+        this.tags[index] = {
+          name: tag.name,
+          count: _.filter(this.list, item => item.customTags.includes(tag.name)).length
+        }
+      } else {
+        this.tags.push({name: tag.name, count: _.filter(this.list, item => item.customTags.includes(tag.name)).length});
+      }
+
+      // todo support delete case for tags
+    });
+  }
+
+  addCustomTagsToItems(input: Item[]) {
+    let list: Item[] = [];
+    let tags: string[] = [];
+    for (let item in input) {
+      input[item].customTags = [];
+
+      for (let tag in input[item].tags) {
+        input[item].customTags.push(tag);
         if (!tags.includes(tag)) {
           tags.push(tag)
         }
       }
 
-      this.list.push(json[item]);
+      list.push(input[item]);
     }
 
-    // get item per tag count
-    this.tags = tags.map((tag) => {
-      return {name: tag, count: _.filter(this.list, item => item.customTags.includes(tag)).length}
-    });
+    return {list: list, tags: tags};
+  }
 
-    this.tags = _.orderBy(this.tags, ['count'], ['desc']);
-    this.list = _.orderBy(this.list, ['time_added'], ['desc']);
-    this.filteredList = this.list;
-
-    console.log(this.tags);
-    console.log(this.filteredList);
+  getLoadingMessageSub() {
+    return this.loadingMessageSub;
   }
 }

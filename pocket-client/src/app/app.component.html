@@ -1,11 +1,11 @@
-<!--sidebar-->
 <div class="spinner" *ngIf="showSpinner === true">
   <div>
-    <mat-progress-spinner mode="indeterminate">gfdgfd</mat-progress-spinner>
-    <p>Loading...</p>
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    <p>{{pocket.getLoadingMessageSub() | async}}...</p>
   </div>
 </div>
 
+<!--sidebar-->
 <mat-sidenav-container fullscreen *ngIf="showSpinner === false">
   <mat-sidenav mode="side" opened="true" style="width: 200px">
 
@@ -41,7 +41,9 @@
       <span class="spacer"></span>
       <!--todo show as cards instead of list-->
       <!--todo show archived items-->
-      <mat-icon (click)="refreshData()">refresh</mat-icon>
+      <button mat-icon-button (click)="refreshData(false)">
+        <mat-icon>refresh</mat-icon>
+      </button>
     </mat-toolbar>
 
     <!--item list-->
@@ -54,7 +56,8 @@
             <b *ngIf="item.resolved_title != ''" class="title">{{item.resolved_title}}</b>
             <b *ngIf="item.resolved_title === ''" class="title">{{item.given_title}}</b>
           </a>
-          <small class="date-added"><i>{{item.time_added + '000' | date}}</i></small>
+          <small class="date-added" *ngIf="item.time_added"><i>{{item.time_added + '000' | date}}</i></small>
+          <small class="date-added" *ngIf="!item.time_added"><i style="font-style: bold;, color: red;">ERROR</i></small>
         </div>
 
         <a matLine class="url" href="{{item.given_url}}" target="_blank">
@@ -73,8 +76,7 @@
 
         <!--<mat-icon>done</mat-icon>-->
         <button mat-icon-button (click)="showAddTagsModal(item.item_id, item.resolved_title, item.customTags )">
-          <mat-icon>bookmark_border
-          </mat-icon>
+          <mat-icon>bookmark_border</mat-icon>
         </button>
 
         <!--<mat-icon>delete</mat-icon>-->

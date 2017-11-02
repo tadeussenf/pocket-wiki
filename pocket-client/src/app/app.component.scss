@@ -6,11 +6,13 @@
   text-align: center;
   align-items: center;
   justify-content: center;
+  flex-direction: row;
   mat-progress-spinner {
-    //display: flex;
+    margin-right: auto;
+    margin-left: auto;
   }
   p {
-    //display: flex;
+    text-align: center;
   }
 }
 
