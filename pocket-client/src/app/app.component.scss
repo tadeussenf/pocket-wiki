@@ -65,23 +65,36 @@ mat-sidenav-container {
 
   }
 
-  .item {
+  .item-list {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 
-    p {
-      margin-top: 0;
-      margin-bottom: 4px;
-      white-space: inherit;
-    }
-
-    .url {
-    }
-
-    .excerpt {
-      p {
-        white-space: normal;
+    .item {
+      &.odd {
+        background-color: #f1f1f1;
       }
-      i {
-        font-size: 13px;
+
+      &.even {
+        //background-color: #f1f1f1;
+      }
+
+      p {
+        margin-top: 0;
+        margin-bottom: 4px;
+        white-space: inherit;
+      }
+
+      .url {
+      }
+
+      .excerpt {
+        p {
+          white-space: normal;
+        }
+        i {
+          font-size: 13px;
+        }
       }
     }
   }

@@ -48,13 +48,17 @@
 
     <!--item list-->
     <!--todo odd even background-->
-    <mat-list>
-      <mat-list-item *ngFor="let item of filteredList" class="item">
+    <mat-list class="item-list">
+      <mat-list-item *ngFor="let item of filteredList; let isOdd=odd; let isEven=even"
+                     class="item"
+                     [class.odd]="isOdd"
+                     [class.even]="isEven">
 
         <div matLine>
           <a *ngIf="item" href="{{item.given_url}}" target="_blank">
             <b *ngIf="item.resolved_title != ''" class="title">{{item.resolved_title}}</b>
-            <b *ngIf="!item.resolved_title || item.resolved_title === '' || item.resolved_title.length <= 20" class="title">{{item.given_title}}</b>
+            <b *ngIf="!item.resolved_title || item.resolved_title === '' || item.resolved_title.length <= 20"
+               class="title">{{item.given_title}}</b>
           </a>
           <small class="date-added" *ngIf="item.time_added"><i>{{item.time_added + '000' | date}}</i></small>
           <small class="date-added" *ngIf="!item.time_added"><i style="font-style: bold; color: red;">ERROR</i></small>
