@@ -66,6 +66,7 @@ export class PocketService {
   }
 
   addTags(itemId: number, tags: string[]) {
+    // todo if new tag add to this.tags and recount items
     console.log("adding tags", tags.toString());
     let body = {
       "consumer_key": this.consumerKey,
@@ -77,6 +78,7 @@ export class PocketService {
         time: Date.now() - 1000
       }]
     };
+
     this.http.post(environment.pocketApiUrl + "v3/send", body, this.options)
       .subscribe(
         res => {
