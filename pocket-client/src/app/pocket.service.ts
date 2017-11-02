@@ -23,7 +23,7 @@ export class PocketService {
   list: Item[] = [];
   filteredList: Item[];
   tags: Tag[] = [];
-  private refreshDataInterval: number = 60; // minutes
+  private refreshDataInterval: number = 1; // minutes
 
   // observable stuff
   item$ = new ReplaySubject(1);
@@ -43,16 +43,17 @@ export class PocketService {
       // todo delete data or inform user that pocket auth has been lost
       this.authenticateWithPocket();
       return;
-    } else if (this.dataOutdated()) {
-      this.loadAllItems(false);
-      return;
     }
+    // else if (this.dataOutdated()) {
+    //   this.loadAllItems(false);
+    //   return;
+    // }
 
     this.tags = JSON.parse(localStorage.getItem("pocket-tags"));
     this.list = JSON.parse(localStorage.getItem("pocket-list"));
 
     // todo if !lastUpdateTime
-    if (!this.list || this.list.length < 1 || !this.tags || this.tags.length < 1) {
+    if (this.dataOutdated() || !this.list || this.list.length < 1 || !this.tags || this.tags.length < 1) {
       this.loadAllItems(true);
       return;
     }
@@ -80,6 +81,30 @@ export class PocketService {
       .subscribe(
         res => {
           // todo add tags to local copy
+          this.saveAllDataToLocalStorage();
+          console.log(res.json());
+        },
+        err => {
+          console.error(err.json())
+        }
+      )
+  }
+
+  deleteItem(itemId) {
+    let body = {
+      "consumer_key": this.consumerKey,
+      "access_token": this.accessToken,
+      actions: [{
+        action: "delete",
+        item_id: itemId,
+        time: Date.now() - 1000
+      }]
+    };
+    this.http.post(environment.pocketApiUrl + "v3/send", body, this.options)
+      .subscribe(
+        res => {
+          // todo add tags to local copy
+          this.deleteItemFromLocalDataCopy(itemId);
           this.saveAllDataToLocalStorage();
           console.log(res.json());
         },
@@ -231,6 +256,7 @@ export class PocketService {
   }
 
   private saveAllDataToLocalStorage() {
+    console.log("saveAllDataToLocalStorage");
     this.loadingMessageSub.next("Saving data to local storage");
     localStorage.setItem("pocket-tags", JSON.stringify(this.tags));
     localStorage.setItem("pocket-list", JSON.stringify(this.list));
@@ -251,7 +277,7 @@ export class PocketService {
     });
 
     if (!forceUpdate) {
-      console.log("merge data");
+      console.log("merging partial data");
       this.mergePartialData(list, tagsWithCount);
     } else {
       console.log("replace data");
@@ -276,20 +302,8 @@ export class PocketService {
       let index = _.findIndex(this.list, existing => existing.item_id === item.item_id);
 
       if (parseInt(item.status) === 2) {
-        if (this.list[index].item_id === item.item_id) {
-          console.log("deleting item with index", index, this.list[index]);
-
-          this.list[index].customTags.forEach((tagName) => {
-            let tag = _.find(this.tags, tag => tag.name === tagName);
-            let index = _.findIndex(this.tags, tag);
-            if (tag.count === 1) {
-              this.tags.splice(index, 1);
-            } else {
-              this.tags[index].count = tag.count - 1;
-            }
-          });
-
-          this.list.splice(index, 1);
+        if (this.list[index] && this.list[index].item_id === item.item_id) {
+          this.deleteItemFromLocalDataCopy(item.item_id);
         } else {
           console.warn("unknown error case when deleting item with index", index, this.list[index]);
         }
@@ -298,7 +312,6 @@ export class PocketService {
       } else {
         this.list.push(item)
       }
-
     });
 
     console.log("merging tags");
@@ -338,5 +351,22 @@ export class PocketService {
 
   getLoadingMessageSub() {
     return this.loadingMessageSub;
+  }
+
+  private deleteItemFromLocalDataCopy(itemId: string) {
+    let index = _.findIndex(this.list, existing => existing.item_id === itemId);
+    console.log("deleting item with index", index, this.list[index]);
+
+    this.list[index].customTags.forEach((tagName) => {
+      let tag = _.find(this.tags, tag => tag.name === tagName);
+      let index = _.findIndex(this.tags, tag);
+      if (tag.count === 1) {
+        this.tags.splice(index, 1);
+      } else {
+        this.tags[index].count = tag.count - 1;
+      }
+    });
+
+    this.list.splice(index, 1);
   }
 }

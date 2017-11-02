@@ -54,7 +54,7 @@
         <div matLine>
           <a *ngIf="item" href="{{item.given_url}}" target="_blank">
             <b *ngIf="item.resolved_title != ''" class="title">{{item.resolved_title}}</b>
-            <b *ngIf="item.resolved_title === ''" class="title">{{item.given_title}}</b>
+            <b *ngIf="!item.resolved_title || item.resolved_title === ''" class="title">{{item.given_title}}</b>
           </a>
           <small class="date-added" *ngIf="item.time_added"><i>{{item.time_added + '000' | date}}</i></small>
           <small class="date-added" *ngIf="!item.time_added"><i style="font-style: bold;, color: red;">ERROR</i></small>
@@ -79,7 +79,9 @@
           <mat-icon>bookmark_border</mat-icon>
         </button>
 
-        <!--<mat-icon>delete</mat-icon>-->
+        <button mat-icon-button (click)="pocket.deleteItem(item.item_id)">
+          <mat-icon>delete</mat-icon>
+        </button>
 
       </mat-list-item>
     </mat-list>
