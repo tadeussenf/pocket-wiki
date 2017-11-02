@@ -49,7 +49,7 @@
     <!--item list-->
     <!--todo odd even background-->
     <mat-list class="item-list">
-      <mat-list-item *ngFor="let item of filteredList; let isOdd=odd; let isEven=even"
+      <mat-list-item *ngFor="let item of filteredList | slice:pageIndex*pageSize:pageIndex*pageSize+pageSize; let isOdd=odd; let isEven=even"
                      class="item"
                      [class.odd]="isOdd"
                      [class.even]="isEven">
@@ -89,6 +89,12 @@
 
       </mat-list-item>
     </mat-list>
+
+    <mat-paginator [length]="filteredList.length"
+                   [pageSize]="pageSize"
+                   [pageSizeOptions]="[5, 10, 25, 50, 100]"
+                   (page)="updatePage($event)">
+    </mat-paginator>
 
   </mat-sidenav-content>
 

@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {AddTagModalData, Item, Tag} from "common/interfaces";
 import {PocketService} from "./pocket.service";
-import {MatDialog} from "@angular/material";
+import {MatDialog, MatPaginator} from "@angular/material";
 import {AddTagsModalComponent} from "./add-tags-modal/add-tags-modal.component";
 import {Observable} from "rxjs";
 import "rxjs/add/operator/debounceTime";
@@ -19,6 +19,8 @@ export class AppComponent implements OnInit {
   filteredList: Item[] = [];
   tags: Tag[] = [];
   loadingMessage: string = "Loading";
+  pageIndex: number = 0;
+  pageSize: number = 25;
 
   // todo search items
 
@@ -85,5 +87,10 @@ export class AppComponent implements OnInit {
         this.pocket.addTags(result.itemId, result.tags);
       }
     });
+  }
+
+  updatePage($event: any) {
+    this.pageIndex = $event.pageIndex;
+    this.pageSize = $event.pageSize;
   }
 }

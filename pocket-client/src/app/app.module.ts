@@ -3,11 +3,18 @@ import {AppComponent} from './app.component';
 import {DndModule} from "ng2-dnd";
 import {
   MatAutocompleteModule,
-  MatButtonModule, MatCardModule, MatCheckboxModule, MatChipsModule, MatDialog, MatDialogModule, MatFormFieldModule,
+  MatButtonModule,
+  MatCardModule,
+  MatCheckboxModule,
+  MatChipsModule,
+  MatDialogModule,
+  MatFormFieldModule,
   MatIconModule,
   MatListModule,
   MatMenuModule,
-  MatProgressBarModule, MatProgressSpinnerModule,
+  MatPaginatorModule,
+  MatProgressBarModule,
+  MatProgressSpinnerModule,
   MatSidenavModule,
   MatToolbarModule
 } from "@angular/material";
@@ -40,6 +47,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
     MatListModule,
     MatButtonModule,
     MatDialogModule,
+    MatPaginatorModule,
     MatFormFieldModule,
     FormsModule,
     ReactiveFormsModule,
