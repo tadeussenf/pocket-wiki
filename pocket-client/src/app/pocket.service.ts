@@ -23,7 +23,7 @@ export class PocketService {
   list: Item[] = [];
   filteredList: Item[];
   tags: Tag[] = [];
-  private refreshDataInterval: number = 1; // minutes
+  private refreshDataInterval: number = 60; // minutes
 
   // observable stuff
   item$ = new ReplaySubject(1);
