@@ -1,30 +1,30 @@
-﻿export interface Item {
+﻿export interface PocketItem {
   item_id: string;
-  resolved_id: string;
-  given_url: string;
-  given_title: string;
-  favorite: string;
   status: string;
   time_added: string;
+  tags: Tags;
+  given_url: string;
+  given_title: string;
+  resolved_title: string;
+  excerpt: string;
+  resolved_id: string;
+  favorite: string;
   time_updated: string;
   time_read: string;
   time_favorited: string;
   sort_id: number;
-  resolved_title: string;
   resolved_url: string;
-  excerpt: string;
   is_article: string;
   is_index: string;
   has_video: string;
   has_image: string;
   word_count: string;
   amp_url: string;
-  tags: Tags;
   authors: any;
   image: Image;
   images: Images;
-  customTags?: (string)[] | null;
 }
+
 export interface Tags {
   [key: string]: string
 }
@@ -35,9 +35,11 @@ export interface Image {
   width: string;
   height: string;
 }
+
 export interface Images {
   [key: number]: Image[];
 }
+
 export interface Image {
   item_id: string;
   image_id: string;
@@ -52,10 +54,11 @@ export interface AddTagModalData {
   itemId: number,
   title: string,
   tags: string[],
-  allTags
+  allTags: Tag[]
 }
 
 export interface Tag {
   name: string;
   count: number
 }
+

@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
-import {Item, Tag} from "../common/interfaces";
+import {PocketItem, Tag} from "../common/interfaces";
 import {Headers, Http, RequestOptionsArgs} from "@angular/http";
 import * as _ from 'lodash';
 import {environment} from "../environments/environment";
 import {ReplaySubject} from "rxjs/ReplaySubject";
+import {Item} from "../common/Item";
 
 @Injectable()
 export class PocketService {
@@ -203,8 +204,8 @@ export class PocketService {
 
   showItemsForTag(tag: string) {
     console.log("showItemsForTag");
-    this.filteredList = _.filter(this.list, (item) => {
-      return item.customTags.includes(tag);
+    this.filteredList = _.filter(this.list, (item: Item) => {
+      return item.customTags.indexOf(tag) > 0;
     });
 
     console.log(this.filteredList);
@@ -217,7 +218,7 @@ export class PocketService {
       this.filteredList = this.list;
     } else {
       let range = (Date.now() / 1000) - (days * 24 * 60 * 60);
-      this.filteredList = _.filter(this.list, (item) => {
+      this.filteredList = _.filter(this.list, (item: Item) => {
         return parseInt(item.time_added) > range;
       })
     }
@@ -226,7 +227,7 @@ export class PocketService {
 
   filterNoTags() {
     console.log("filterNoTags");
-    this.filteredList = _.filter(this.list, (item) => {
+    this.filteredList = _.filter(this.list, (item: Item) => {
       return item.customTags.length === 0;
     });
     this.item$.next(this.filteredList);
@@ -263,12 +264,12 @@ export class PocketService {
     localStorage.setItem("pocket-list", JSON.stringify(this.list));
   }
 
-  private extractDataFromReponse(input: Item[], forceUpdate: boolean) {
+  private extractDataFromReponse(input: any, forceUpdate: boolean) {
     // get tag list from all items
     this.loadingMessageSub.next("Extracting metadata");
     console.log("extractDataFromReponse");
 
-    let transfer = this.addCustomTagsToItems(input);
+    let transfer = this.convertToItem(input);
     let list: Item[] = transfer.list;
     let tags: string[] = transfer.tags;
 
@@ -329,20 +330,32 @@ export class PocketService {
     });
   }
 
-  addCustomTagsToItems(input: Item[]) {
+  // remove not needed properties form pocket items for storage reasons and get list of all tags
+  convertToItem(input: any) {
+    console.log("convert to item", input);
     let list: Item[] = [];
-    let tags: string[] = [];
-    for (let item in input) {
-      input[item].customTags = [];
+    let tags = [];
 
-      for (let tag in input[item].tags) {
-        input[item].customTags.push(tag);
-        if (!tags.includes(tag)) {
+    for (let pocketItem in input) {
+      let item = new Item(
+        input[pocketItem].item_id,
+        input[pocketItem].time_added,
+        input[pocketItem].status,
+        input[pocketItem].given_url,
+        input[pocketItem].given_title,
+        input[pocketItem].resolved_title,
+        input[pocketItem].excerpt,
+        new Array(0)
+      );
+
+      for (let tag in input[pocketItem].tags) {
+        item.customTags.push(tag);
+        if (tags.indexOf(tag) < 0) { // does not exist
           tags.push(tag)
         }
       }
 
-      list.push(input[item]);
+      list.push(item);
     }
 
     return {list: list, tags: tags};

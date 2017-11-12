@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {AddTagModalData, Item, Tag} from "common/interfaces";
+import {AddTagModalData, PocketItem, Tag} from "common/interfaces";
 import {PocketService} from "./pocket.service";
 import {MatDialog, MatPaginator} from "@angular/material";
 import {AddTagsModalComponent} from "./add-tags-modal/add-tags-modal.component";
@@ -15,8 +15,8 @@ import "rxjs/add/operator/debounceTime";
 export class AppComponent implements OnInit {
   showSpinner: boolean = true;
   username: any;
-  list: Item[] = [];
-  filteredList: Item[] = [];
+  list: PocketItem[] = [];
+  filteredList: PocketItem[] = [];
   tags: Tag[] = [];
   loadingMessage: string = "Loading";
   pageIndex: number = 0;

@@ -46,7 +46,7 @@ export class AddTagsModalComponent implements AfterViewInit, OnDestroy {
     this.tagInputSub = this.tagInput.valueChanges
       .debounceTime(300)
       .subscribe(val => {
-        this.filteredTags = val ? _.filter(this.tags, item => item.name.startsWith(val)) : [];
+        this.filteredTags = val ? _.filter(this.tags, (item: Tag) => item.name.startsWith(val)) : [];
       });
     setTimeout(() => {
       this.chipList._focusInput();
@@ -56,7 +56,7 @@ export class AddTagsModalComponent implements AfterViewInit, OnDestroy {
 
   add(event: MatChipInputEvent): void {
     console.log("add", event.value);
-    if (event.value.length > 0 && !this.data.tags.includes(event.value)) {
+    if (event.value.length > 0 && this.data.tags.indexOf(event.value) < 0) { // does not exist
       console.log("add value", event.value);
       this.data.tags.push(event.value);
       event.input.value = "";
