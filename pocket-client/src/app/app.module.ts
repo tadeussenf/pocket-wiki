@@ -51,7 +51,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
     MatFormFieldModule,
     FormsModule,
     ReactiveFormsModule,
-    DndModule.forRoot()
+    // DndModule.forRoot()
   ],
   providers: [
     PocketService

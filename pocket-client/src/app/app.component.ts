@@ -3,8 +3,9 @@ import {AddTagModalData, PocketItem, Tag} from "common/interfaces";
 import {PocketService} from "./pocket.service";
 import {MatDialog, MatPaginator} from "@angular/material";
 import {AddTagsModalComponent} from "./add-tags-modal/add-tags-modal.component";
-import {Observable} from "rxjs";
 import "rxjs/add/operator/debounceTime";
+import "rxjs/add/observable/combineLatest";
+import {Observable} from "rxjs/Observable";
 
 @Component({
   selector: 'app-root',

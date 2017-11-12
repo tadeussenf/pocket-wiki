@@ -1,0 +1,9 @@
+{
+  "name": "UI for Mozilla Pocket",
+  "short_name": "UI for Mozilla Pocket",
+  "theme_color": "#FFFFFF",
+  "background_color": "#3F51B5",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait"
+}
