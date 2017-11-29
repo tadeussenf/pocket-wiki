@@ -33,7 +33,6 @@ export class AppComponent implements OnInit {
     Observable.combineLatest(this.pocket.getItemsSub(), this.pocket.getTagSub())
       .debounceTime(50)
       .subscribe((values: any) => {
-        console.log(values);
         let [items, tags] = values;
         this.filteredList = items;
         this.tags = tags;

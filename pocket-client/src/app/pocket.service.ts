@@ -203,12 +203,12 @@ export class PocketService {
   }
 
   showItemsForTag(tag: string) {
-    console.log("showItemsForTag");
+    console.log("showItemsForTag", tag);
     this.filteredList = _.filter(this.list, (item: Item) => {
-      return item.customTags.indexOf(tag) > 0;
+      return item.customTags.includes(tag);
     });
 
-    console.log(this.filteredList);
+    console.log("emit filteredList", this.filteredList);
     this.item$.next(this.filteredList);
   }
 
@@ -222,6 +222,8 @@ export class PocketService {
         return parseInt(item.time_added) > range;
       })
     }
+
+    console.log("emit filteredList", this.filteredList);
     this.item$.next(this.filteredList);
   }
 
@@ -230,6 +232,8 @@ export class PocketService {
     this.filteredList = _.filter(this.list, (item: Item) => {
       return item.customTags.length === 0;
     });
+
+    console.log("emit filteredList", this.filteredList);
     this.item$.next(this.filteredList);
   }
 
