@@ -1,4 +1,6 @@
-<form (ngSubmit)="onSubmit(searchTerm)">
-  <input type="text" name="searchTerm" [(ngModel)]="searchTerm">
-  <button type="submit">Search</button>
+<form [formGroup]="searchForm" (ngSubmit)="onSubmit(form.value)" class="item-list">
+  <mat-form-field class="example-full-width">
+    <input matInput #input name="search" type="text" formControlName="searchTerm">
+  </mat-form-field>
+  <button mat-button type="submit">Search</button>
 </form>

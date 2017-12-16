@@ -1,0 +1,11 @@
+<mat-list class="item-list">
+  <!--todo-->
+  <!--<h4>Tags</h4>-->
+
+  <mat-list-item
+    *ngFor="let tag of tags"
+    (click)="tagSelected(tag.name)"
+  >
+    {{tag.name}}
+  </mat-list-item>
+</mat-list>

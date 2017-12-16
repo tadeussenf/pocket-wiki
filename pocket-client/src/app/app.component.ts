@@ -17,7 +17,9 @@ export class AppComponent implements OnInit {
   list: PocketItem[] = [];
   filteredList: PocketItem[] = [];
   tags: Tag[] = [];
+  filteredTags: Tag[];
   loadingMessage: string = "Loading";
+  searchTerm: string;
 
   constructor(public pocket: PocketService) {
     console.log("constructor done");
@@ -28,6 +30,7 @@ export class AppComponent implements OnInit {
       .debounceTime(50)
       .subscribe((values: any) => {
         let [items, tags] = values;
+        this.list = items;
         this.filteredList = items;
         this.tags = tags;
         console.log("recieved items", items);
@@ -68,8 +71,22 @@ export class AppComponent implements OnInit {
   //   console.log($event);
   // }
 
-  onSearchSubmit(searchTermin: string) {
-    console.log("search for", searchTermin);
-    // TODO implement me
+  onSearchSubmit(searchTerm: string) {
+    this.filteredTags = this.tags.filter(tag => tag.name.toLowerCase() === searchTerm.toLowerCase());
+    this.filteredList = this.list.filter(item => {
+
+      if (item.resolved_title) {
+        return item.resolved_title.toLowerCase().includes(searchTerm.toLowerCase());
+      } else {
+        return item.given_title.toLowerCase().includes(searchTerm.toLowerCase());
+      }
+    });
+    this.searchTerm = searchTerm;
+  }
+
+  onSearchReset() {
+    delete this.searchTerm;
+    this.filteredTags = this.tags;
+    this.filteredList = this.list
   }
 }

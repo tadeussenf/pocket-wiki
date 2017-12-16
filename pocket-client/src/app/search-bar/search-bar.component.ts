@@ -1,4 +1,5 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-search-bar',
@@ -7,16 +8,22 @@ import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 })
 export class SearchBarComponent implements OnInit {
   @Output() onSearchSubmit = new EventEmitter<string>();
+  searchForm: FormGroup;
   searchTerm: string;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
+    this.searchForm = new FormGroup({
+      searchTerm: new FormControl('')
+    });
   }
 
   onSubmit(searchTerm: string) {
-    console.log(searchTerm);
-    this.onSearchSubmit.emit(searchTerm)
+    if (searchTerm && searchTerm.length > 0) {
+      this.onSearchSubmit.emit(searchTerm)
+    }
   }
 
 }

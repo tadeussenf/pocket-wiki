@@ -34,10 +34,13 @@
       </button>
     </mat-toolbar>
 
+    <!--search bar-->
+    <app-search-bar (onSearchSubmit)="onSearchSubmit($event)"></app-search-bar>
+
+    <!--search results (tags)-->
+    <app-search-result-list *ngIf="searchTerm" [tags]="filteredTags"></app-search-result-list>
+
     <!--item list-->
-
-    <app-search-bar  (onSearchSubmit)="onSearchSubmit($event)"></app-search-bar>
-
     <app-item-list [filteredList]="filteredList" [tags]="tags" (tagsAdded)="onTagsAdded($event)"></app-item-list>
 
   </mat-sidenav-content>

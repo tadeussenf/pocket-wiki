@@ -17,6 +17,7 @@ import {
   MatProgressSpinnerModule,
   MatSidenavModule,
   MatToolbarModule
+  MatInputModule,
 } from "@angular/material";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {HttpModule} from "@angular/http";
@@ -27,6 +28,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ItemListComponent } from './item-list/item-list.component';
 import { SearchBarComponent } from './search-bar/search-bar.component';
+import { SearchResultListComponent } from './search-result-list/search-result-list.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +36,8 @@ import { SearchBarComponent } from './search-bar/search-bar.component';
     AddTagsModalComponent,
     SidebarComponent,
     ItemListComponent,
-    SearchBarComponent
+    SearchBarComponent,
+    SearchResultListComponent
   ],
   imports: [
     BrowserModule,
@@ -45,6 +48,7 @@ import { SearchBarComponent } from './search-bar/search-bar.component';
     MatProgressSpinnerModule,
     MatAutocompleteModule,
     MatCheckboxModule,
+    MatInputModule,
     MatIconModule,
     MatChipsModule,
     MatToolbarModule,
