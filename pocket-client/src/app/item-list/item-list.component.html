@@ -1,0 +1,49 @@
+<!--todo odd even background-->
+<mat-list class="item-list">
+  <mat-list-item
+    *ngFor="let item of filteredList | slice:pageIndex*pageSize:pageIndex*pageSize+pageSize; let isOdd=odd; let isEven=even"
+    class="item"
+    [class.odd]="isOdd"
+    [class.even]="isEven">
+
+    <div matLine>
+      <a *ngIf="item" href="{{item.given_url}}" target="_blank">
+        <b *ngIf="item.resolved_title != ''" class="title">{{item.resolved_title}}</b>
+        <b *ngIf="!item.resolved_title || item.resolved_title === '' || item.resolved_title.length <= 20"
+           class="title">{{item.given_title}}</b>
+      </a>
+      <small class="date-added" *ngIf="item.time_added"><i>{{item.time_added + '000' | date}}</i></small>
+      <small class="date-added" *ngIf="!item.time_added"><i style="font-style: bold; color: red;">ERROR</i></small>
+    </div>
+
+    <a matLine class="url" href="{{item.given_url}}" target="_blank">
+      <small><p>{{item.given_url}}</p></small>
+    </a>
+
+    <i matLine class="excerpt">
+      <p>{{item.excerpt}} </p>
+    </i>
+
+    <mat-chip-list matLine>
+      <mat-chip *ngFor="let tag of item.customTags">
+        <a style="cursor: pointer" (click)="filterByTag(tag)">{{tag}}</a>
+      </mat-chip>
+    </mat-chip-list>
+
+    <!--<mat-icon>done</mat-icon>-->
+    <button mat-icon-button (click)="showAddTagsModal(item.item_id, item.resolved_title, item.customTags )">
+      <mat-icon>bookmark_border</mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="pocket.deleteItem(item.item_id)">
+      <mat-icon>delete</mat-icon>
+    </button>
+
+  </mat-list-item>
+</mat-list>
+
+<mat-paginator [length]="filteredList.length"
+               [pageSize]="pageSize"
+               [pageSizeOptions]="[5, 10, 25, 50, 100]"
+               (page)="updatePage($event)">
+</mat-paginator>

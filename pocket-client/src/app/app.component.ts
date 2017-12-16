@@ -1,8 +1,6 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {AddTagModalData, PocketItem, Tag} from "common/interfaces";
 import {PocketService} from "./pocket.service";
-import {MatDialog, MatPaginator} from "@angular/material";
-import {AddTagsModalComponent} from "./add-tags-modal/add-tags-modal.component";
 import "rxjs/add/operator/debounceTime";
 import "rxjs/add/observable/combineLatest";
 import {Observable} from "rxjs/Observable";
@@ -20,12 +18,8 @@ export class AppComponent implements OnInit {
   filteredList: PocketItem[] = [];
   tags: Tag[] = [];
   loadingMessage: string = "Loading";
-  pageIndex: number = 0;
-  pageSize: number = 25;
 
-  // todo search items
-
-  constructor(public pocket: PocketService, public dialog: MatDialog) {
+  constructor(public pocket: PocketService) {
     console.log("constructor done");
   }
 
@@ -66,31 +60,12 @@ export class AppComponent implements OnInit {
     this.pocket.filterNoTags();
   }
 
+  onTagsAdded(data: AddTagModalData) {
+    this.pocket.addTags(data.itemId, data.tags);
+  }
+
   // simpleDrop($event: Event) {
   //   console.log($event);
   // }
 
-  showAddTagsModal(itemId: number, title: string, tags: string[]): void {
-    let dialogRef = this.dialog.open(AddTagsModalComponent, {
-      width: '500px',
-      data: {
-        itemId: itemId,
-        title: title,
-        tags: tags,
-        allTags: this.tags
-      }
-    });
-
-    dialogRef.afterClosed().subscribe((result: AddTagModalData) => {
-      console.log(result);
-      if (result) {
-        this.pocket.addTags(result.itemId, result.tags);
-      }
-    });
-  }
-
-  updatePage($event: any) {
-    this.pageIndex = $event.pageIndex;
-    this.pageSize = $event.pageSize;
-  }
 }
