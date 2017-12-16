@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Item} from "../../common/Item";
-import {AddTagModalData, Tag} from "../../common/interfaces";
+import {AddTagModalData, PocketItem, Tag} from "../../common/interfaces";
 import {AddTagsModalComponent} from "../add-tags-modal/add-tags-modal.component";
 import {MatDialog} from "@angular/material";
 
@@ -10,7 +10,7 @@ import {MatDialog} from "@angular/material";
   styleUrls: ['./item-list.component.scss']
 })
 export class ItemListComponent implements OnInit {
-  @Input() filteredList: Item[];
+  @Input() filteredList: PocketItem[];
   @Input() tags: Tag[];
   @Output() tagsAdded = new EventEmitter<AddTagModalData>();
   pageIndex: number = 0;

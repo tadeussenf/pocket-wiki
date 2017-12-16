@@ -26,13 +26,15 @@ import {AddTagsModalComponent} from './add-tags-modal/add-tags-modal.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ItemListComponent } from './item-list/item-list.component';
+import { SearchBarComponent } from './search-bar/search-bar.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     AddTagsModalComponent,
     SidebarComponent,
-    ItemListComponent
+    ItemListComponent,
+    SearchBarComponent
   ],
   imports: [
     BrowserModule,

@@ -35,6 +35,9 @@
     </mat-toolbar>
 
     <!--item list-->
+
+    <app-search-bar  (onSearchSubmit)="onSearchSubmit($event)"></app-search-bar>
+
     <app-item-list [filteredList]="filteredList" [tags]="tags" (tagsAdded)="onTagsAdded($event)"></app-item-list>
 
   </mat-sidenav-content>

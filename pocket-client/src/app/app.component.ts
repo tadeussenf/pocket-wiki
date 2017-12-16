@@ -68,4 +68,8 @@ export class AppComponent implements OnInit {
   //   console.log($event);
   // }
 
+  onSearchSubmit(searchTermin: string) {
+    console.log("search for", searchTermin);
+    // TODO implement me
+  }
 }
