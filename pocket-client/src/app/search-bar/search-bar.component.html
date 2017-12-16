@@ -1,6 +1,11 @@
 <form [formGroup]="searchForm" (ngSubmit)="onSubmit(searchForm.value['searchTerm'])" class="item-list">
   <mat-form-field class="example-full-width">
-    <input matInput name="search" type="text" formControlName="searchTerm">
+    <input matInput (shouldLabelFloat)="false" name="search" type="text" formControlName="searchTerm" placeholder="Search for title or tags">
+    <button mat-button *ngIf="searchForm.value['searchTerm']" matSuffix mat-icon-button aria-label="Clear" (click)="resetSearchTerm()">
+      <mat-icon>close</mat-icon>
+    </button>
   </mat-form-field>
-  <button mat-button type="submit">Search</button>
+  <button mat-icon-button type="submit">
+    <mat-icon>search</mat-icon>
+  </button>
 </form>

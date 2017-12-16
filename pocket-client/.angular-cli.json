@@ -21,7 +21,6 @@
       "prefix": "app",
       "serviceWorker": true,
       "styles": [
-        "../node_modules/ng2-dnd/style.css",
         "styles.scss"
       ],
       "scripts": [],

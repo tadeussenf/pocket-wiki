@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
-import {Tag} from "../../common/interfaces";
+import {PocketItem, Tag} from "../../common/interfaces";
 
 @Component({
   selector: 'app-sidebar',
@@ -10,6 +10,7 @@ import {Tag} from "../../common/interfaces";
 export class SidebarComponent implements OnInit {
   @Input() username: string;
   @Input() tags: Tag[];
+  @Input() items: PocketItem[];
   @Output() filterByTag = new EventEmitter<string>();
   @Output() resetFilter = new EventEmitter();
   @Output() filterByDate = new EventEmitter<number>();

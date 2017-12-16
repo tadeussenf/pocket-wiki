@@ -27,4 +27,7 @@ export class SearchBarComponent implements OnInit {
     }
   }
 
+  resetSearchTerm() {
+    this.searchForm.controls['searchTerm'].reset();
+  }
 }
