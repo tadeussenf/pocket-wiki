@@ -21,6 +21,7 @@ export class SearchBarComponent implements OnInit {
   }
 
   onSubmit(searchTerm: string) {
+    console.log("search", searchTerm);
     if (searchTerm && searchTerm.length > 0) {
       this.onSearchSubmit.emit(searchTerm)
     }
