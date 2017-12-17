@@ -72,6 +72,12 @@ export class AppComponent implements OnInit {
   // }
 
   onSearchSubmit(searchTerm: string) {
+    if (!searchTerm || searchTerm.length === 0) {
+      this.searchTerm = searchTerm;
+      this.filteredList = this.list;
+      return;
+    }
+
     this.filteredTags = this.tags.filter(tag => tag.name.toLowerCase() === searchTerm.toLowerCase());
     this.filteredList = this.list.filter(item => {
 

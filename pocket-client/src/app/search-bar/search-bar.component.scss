@@ -1,0 +1,21 @@
+:host {
+  width: 100%;
+}
+
+div {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+form {
+  //padding-left: 10%;
+}
+
+mat-form-field {
+  width: 95%;
+}
+
+button[type="submit"] {
+  width: 8%;
+}

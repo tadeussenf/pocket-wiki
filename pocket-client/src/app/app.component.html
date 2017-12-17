@@ -28,9 +28,10 @@
     <mat-toolbar>
       <!--<span class="content-title">{{filteredList.length}} items</span>-->
 
+      <span class="spacer"></span>
 
       <!--search bar-->
-      <app-search-bar class="content-title" (onSearchSubmit)="onSearchSubmit($event)"></app-search-bar>
+      <app-search-bar (onSearchSubmit)="onSearchSubmit($event)"></app-search-bar>
 
       <span class="spacer"></span>
       <!--todo show as cards instead of list-->
@@ -42,7 +43,7 @@
 
 
     <!--search results (tags)-->
-    <app-search-result-list *ngIf="searchTerm" [tags]="filteredTags"></app-search-result-list>
+    <app-search-result-list *ngIf="searchTerm && searchTerm.length > 0" [tags]="filteredTags"></app-search-result-list>
 
     <!--item list-->
     <app-item-list [filteredList]="filteredList" [tags]="tags" (tagsAdded)="onTagsAdded($event)"></app-item-list>

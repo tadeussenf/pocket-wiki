@@ -22,12 +22,11 @@ export class SearchBarComponent implements OnInit {
 
   onSubmit(searchTerm: string) {
     console.log("search", searchTerm);
-    if (searchTerm && searchTerm.length > 0) {
-      this.onSearchSubmit.emit(searchTerm)
-    }
+    this.onSearchSubmit.emit(searchTerm)
   }
 
   resetSearchTerm() {
     this.searchForm.controls['searchTerm'].reset();
+    this.onSearchSubmit.emit('')
   }
 }
