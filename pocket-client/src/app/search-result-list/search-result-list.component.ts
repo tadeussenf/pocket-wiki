@@ -8,7 +8,7 @@ import {Tag} from "../../common/interfaces";
 })
 export class SearchResultListComponent implements OnInit {
   @Input() tags: Tag[];
-  @Output() onTagSelected = new EventEmitter<string>()
+  @Output() onTagSelected = new EventEmitter<string>();
 
   constructor() {
   }

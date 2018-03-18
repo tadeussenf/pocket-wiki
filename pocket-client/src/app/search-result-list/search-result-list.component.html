@@ -6,6 +6,9 @@
     *ngFor="let tag of tags"
     (click)="tagSelected(tag.name)"
   >
-    {{tag.name}}
+    <button matButton>
+      {{tag.name}}
+
+    </button>
   </mat-list-item>
 </mat-list>

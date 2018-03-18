@@ -43,7 +43,7 @@
 
 
     <!--search results (tags)-->
-    <app-search-result-list *ngIf="searchTerm && searchTerm.length > 0" [tags]="filteredTags"></app-search-result-list>
+    <app-search-result-list *ngIf="searchTerm && searchTerm.length > 0" [tags]="filteredTags" (onTagSelected)="filterByTag($event)"></app-search-result-list>
 
     <!--item list-->
     <app-item-list [filteredList]="filteredList" [tags]="tags" (tagsAdded)="onTagsAdded($event)"></app-item-list>
