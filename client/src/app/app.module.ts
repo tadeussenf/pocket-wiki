@@ -19,7 +19,7 @@ import {
   MatToolbarModule,
 } from "@angular/material";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
-import {HttpModule} from "@angular/http";
+import {HttpClientModule} from '@angular/common/http';
 import {BrowserModule} from "@angular/platform-browser";
 import {PocketService} from "./pocket.service";
 import {AddTagsModalComponent} from './add-tags-modal/add-tags-modal.component';
@@ -40,7 +40,7 @@ import {SearchResultListComponent} from './search-result-list/search-result-list
   ],
   imports: [
     BrowserModule,
-    HttpModule,
+    HttpClientModule,
     BrowserAnimationsModule,
     MatMenuModule,
     MatProgressBarModule,

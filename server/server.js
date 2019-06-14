@@ -3,6 +3,7 @@ var app = express();
 var request = require("request");
 var bodyParser = require("body-parser");
 app.use(bodyParser.json());
+console.log("hej");
 
 app.all("/*", function (req, res) {
 

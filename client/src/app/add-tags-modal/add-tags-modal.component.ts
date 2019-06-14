@@ -19,8 +19,8 @@ const COMMA = 188;
 })
 export class AddTagsModalComponent implements AfterViewInit, OnDestroy {
 
-  @ViewChild('input') input: ElementRef;
-  @ViewChild('chipList') chipList: MatChipList;
+  @ViewChild('input', null) input: ElementRef;
+  @ViewChild('chipList', null) chipList: MatChipList;
   tagInput: FormControl = new FormControl();
   selectable: boolean = true;
   removable: boolean = true;
