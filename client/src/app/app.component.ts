@@ -3,7 +3,7 @@ import {AddTagModalData, PocketItem, Tag} from "common/interfaces";
 import {PocketService} from "./pocket.service";
 import "rxjs/add/operator/debounceTime";
 import "rxjs/add/observable/combineLatest";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-root',

@@ -4,7 +4,7 @@ import {PocketService} from "../pocket.service";
 import {AddTagModalData, Tag} from "../../common/interfaces";
 import {FormControl} from "@angular/forms";
 import * as _ from 'lodash';
-import {Subscription} from "rxjs/Subscription";
+import {Subscription} from "rxjs";
 import "rxjs/add/operator/map";
 import "rxjs/add/operator/throttleTime";
 import "rxjs/add/operator/debounce";
@@ -19,8 +19,8 @@ const COMMA = 188;
 })
 export class AddTagsModalComponent implements AfterViewInit, OnDestroy {
 
-  @ViewChild('input') input: ElementRef;
-  @ViewChild('chipList') chipList: MatChipList;
+  @ViewChild('input', {static: true}) input: ElementRef;
+  @ViewChild('chipList', {static: true}) chipList: MatChipList;
   tagInput: FormControl = new FormControl();
   selectable: boolean = true;
   removable: boolean = true;

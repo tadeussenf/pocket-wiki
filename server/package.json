@@ -3,10 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node server.js"
   },
   "dependencies": {
     "body-parser": "~1.18.2",
-    "express": "~4.15.5"
+    "express": "~4.15.5",
+    "request": "^2.88.0"
   }
 }

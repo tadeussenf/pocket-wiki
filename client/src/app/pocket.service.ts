@@ -1,21 +1,20 @@
 import {Injectable} from '@angular/core';
-import {PocketItem, Tag} from "../common/interfaces";
-import {Headers, Http, RequestOptionsArgs} from "@angular/http";
+import {Tag} from "../common/interfaces";
 import * as _ from 'lodash';
 import {environment} from "../environments/environment";
-import {ReplaySubject} from "rxjs/ReplaySubject";
+import {ReplaySubject} from "rxjs";
 import {Item} from "../common/Item";
+import {HttpClient} from "@angular/common/http";
 
 @Injectable()
 export class PocketService {
   // auth stuff
   private accessToken: any;
   private consumerKey = "71520-12304220fa8fcbd039b9be34";
-  private headers: Headers = new Headers({
+  private headers = {
     'Content-Type': 'application/json',
     'X-Accept': 'application/json'
-  });
-  private options: RequestOptionsArgs = {'headers': this.headers};
+  };
   private requestToken: string;
 
   // data stuff
@@ -31,7 +30,9 @@ export class PocketService {
   tag$ = new ReplaySubject(1);
   loadingMessageSub = new ReplaySubject(1);
 
-  constructor(private http: Http) {
+  constructor(
+    private httpClient: HttpClient
+  ) {
     console.log("init service");
     console.log(environment);
 
@@ -79,12 +80,11 @@ export class PocketService {
       }]
     };
 
-    this.http.post(environment.pocketApiUrl + "v3/send", body, this.options)
+    this.httpClient.post(environment.pocketApiUrl + "v3/send", body)
       .subscribe(
         res => {
           // todo add tags to local copy
           this.saveAllDataToLocalStorage();
-          console.log(res.json());
         },
         err => {
           console.error(err.json())
@@ -102,13 +102,13 @@ export class PocketService {
         time: Date.now() - 1000
       }]
     };
-    this.http.post(environment.pocketApiUrl + "v3/send", body, this.options)
+    this.httpClient.post(environment.pocketApiUrl + "v3/send", body)
       .subscribe(
         res => {
           // todo add tags to local copy
           this.deleteItemFromLocalDataCopy(itemId);
           this.saveAllDataToLocalStorage();
-          console.log(res.json());
+          console.log(res);
         },
         err => {
           console.error(err.json())
@@ -125,15 +125,14 @@ export class PocketService {
       // todo: getAccessToken()
       this.loadingMessageSub.next("Authenticating with pocket");
       console.log("found requestToken in LS");
-      this.http.post(environment.pocketApiUrl + "v3/oauth/authorize", {
+      this.httpClient.post<any>(environment.pocketApiUrl + "v3/oauth/authorize", {
         "consumer_key": this.consumerKey,
         "code": this.requestToken
-      }, this.options).subscribe(
+      }, {headers: this.headers}).subscribe(
         (res) => {
-          let response = res.json();
-          console.log(response);
-          this.username = response.username;
-          this.accessToken = response.access_token;
+          console.log(res);
+          this.username = res.username;
+          this.accessToken = res.access_token;
           localStorage.setItem("pocket-accessToken", this.accessToken);
           localStorage.setItem("pocket-username", this.username);
           this.loadAllItems(true);
@@ -146,11 +145,11 @@ export class PocketService {
     } else {
       // todo: getRequestToken()
       this.loadingMessageSub.next("Connecting to pocket");
-      this.http.post(environment.pocketApiUrl + "v3/oauth/request", {
+      this.httpClient.post(environment.pocketApiUrl + "v3/oauth/request", {
         "consumer_key": this.consumerKey,
         "redirect_uri": environment.redirectUrl
-      }, this.options).subscribe((res: any) => {
-          let response = res.json();
+      }).subscribe((res: any) => {
+          let response = res;
           console.log(response);
 
           if (!response.access_token) {
@@ -185,9 +184,10 @@ export class PocketService {
       delete body.since;
     }
 
-    this.http.post(environment.pocketApiUrl + "v3/get", body)
+    this.httpClient.post<any>(environment.pocketApiUrl + "v3/get", body, {headers: this.headers})
       .subscribe((res) => {
-        let response = res.json();
+        console.log(res);
+        let response: any = res; //JSON.parse(res.replace("\\", ""));
         this.lastUpdateTime = response.since;
 
         // extract and count tags
