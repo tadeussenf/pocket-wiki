@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
-import {PocketItem, Tag} from "../common/interfaces";
+import {Tag} from "../common/interfaces";
 import {Headers, Http, RequestOptionsArgs} from "@angular/http";
 import * as _ from 'lodash';
 import {environment} from "../environments/environment";
 import {ReplaySubject} from "rxjs/ReplaySubject";
 import {Item} from "../common/Item";
+import {HttpClient} from "@angular/common/http";
 
 @Injectable()
 export class PocketService {
@@ -31,7 +32,10 @@ export class PocketService {
   tag$ = new ReplaySubject(1);
   loadingMessageSub = new ReplaySubject(1);
 
-  constructor(private http: Http) {
+  constructor(
+    private http: Http,
+    private httpClient: HttpClient
+  ) {
     console.log("init service");
     console.log(environment);
 
@@ -185,13 +189,14 @@ export class PocketService {
       delete body.since;
     }
 
-    this.http.post(environment.pocketApiUrl + "v3/get", body)
+    this.httpClient.post<any>(environment.pocketApiUrl + "v3/get", body, {
+      responseType: "text" as "json" // this is really weird
+    })
       .subscribe((res) => {
-        let response = res.json();
-        this.lastUpdateTime = response.since;
+        this.lastUpdateTime = res.since;
 
         // extract and count tags
-        this.extractDataFromReponse(response.list, forceUpdate);
+        this.extractDataFromReponse(res.list, forceUpdate);
 
         localStorage.setItem("pocket-lastUpdateTime", JSON.stringify(this.lastUpdateTime));
         this.saveAllDataToLocalStorage();

@@ -28,6 +28,7 @@ import {SidebarComponent} from './sidebar/sidebar.component';
 import {ItemListComponent} from './item-list/item-list.component';
 import {SearchBarComponent} from './search-bar/search-bar.component';
 import {SearchResultListComponent} from './search-result-list/search-result-list.component';
+import {HttpClientModule} from "@angular/common/http";
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import {SearchResultListComponent} from './search-result-list/search-result-list
   imports: [
     BrowserModule,
     HttpModule,
+    HttpClientModule,
     BrowserAnimationsModule,
     MatMenuModule,
     MatProgressBarModule,
