@@ -12,6 +12,7 @@
         <b *ngIf="!item.resolved_title || item.resolved_title === '' || item.resolved_title.length <= 20"
            class="title">{{item.given_title}}</b>
       </a>
+      &nbsp;
       <small class="date-added" *ngIf="item.time_added"><i>{{item.time_added + '000' | date}}</i></small>
       <small class="date-added" *ngIf="!item.time_added"><i style="font-style: bold; color: red;">ERROR</i></small>
     </div>

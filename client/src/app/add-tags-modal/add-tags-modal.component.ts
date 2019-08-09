@@ -9,8 +9,7 @@ import "rxjs/add/operator/map";
 import "rxjs/add/operator/throttleTime";
 import "rxjs/add/operator/debounce";
 import "rxjs/add/operator/debounceTime";
-
-const COMMA = 188;
+import {COMMA, ENTER, SPACE} from "@angular/cdk/keycodes";
 
 @Component({
   selector: 'app-add-tags-modal',
@@ -22,10 +21,7 @@ export class AddTagsModalComponent implements AfterViewInit, OnDestroy {
   @ViewChild('input', {static: true}) input: ElementRef;
   @ViewChild('chipList', {static: true}) chipList: MatChipList;
   tagInput: FormControl = new FormControl();
-  selectable: boolean = true;
-  removable: boolean = true;
-  addOnBlur: boolean = true;
-  separatorKeysCodes = [COMMA];
+  separatorKeysCodes = [COMMA, SPACE];
   private oldTags: string[];
   private tags: Tag[];
   filteredTags: Tag[];
@@ -79,6 +75,7 @@ export class AddTagsModalComponent implements AfterViewInit, OnDestroy {
     if (index >= 0) {
       this.data.tags.splice(index, 1);
     }
+    console.log(this.data.tags);
   }
 
   doSubmit() {

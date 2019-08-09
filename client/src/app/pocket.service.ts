@@ -61,7 +61,6 @@ export class PocketService {
 
     console.log("sorting all items");
     this.filteredList = this.list;
-    console.log(this.filteredList);
     this.item$.next(this.filteredList);
     this.tag$.next(this.tags);
   }
@@ -186,12 +185,10 @@ export class PocketService {
 
     this.httpClient.post<any>(environment.pocketApiUrl + "v3/get", body, {headers: this.headers})
       .subscribe((res) => {
-        console.log(res);
-        let response: any = res; //JSON.parse(res.replace("\\", ""));
-        this.lastUpdateTime = response.since;
+        this.lastUpdateTime = res.since;
 
         // extract and count tags
-        this.extractDataFromReponse(response.list, forceUpdate);
+        this.extractDataFromReponse(res.list, forceUpdate);
 
         localStorage.setItem("pocket-lastUpdateTime", JSON.stringify(this.lastUpdateTime));
         this.saveAllDataToLocalStorage();
