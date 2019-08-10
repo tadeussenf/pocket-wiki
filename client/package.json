@@ -6,7 +6,7 @@
     "ng": "ng",
     "start": "ng serve --proxy-config cors-proxy.json --ssl",
     "startNode": "ng serve --proxy-config node-proxy.json --ssl",
-    "build": "ng build --prod --sourcemaps --base-href /ui-for-pocket/",
+    "build": "ng build --prod --base-href /pocket-wiki/",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
