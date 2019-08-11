@@ -7,12 +7,22 @@
   align-items: center;
   justify-content: center;
   flex-direction: row;
+
   mat-progress-spinner {
     margin-right: auto;
     margin-left: auto;
   }
+
   p {
     text-align: center;
+  }
+}
+
+.mat-toolbar {
+  .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: inherit;
   }
 }
 
@@ -58,41 +68,8 @@ mat-sidenav-container {
           text-align: left;
           flex: 1;
         }
+
         .count {
-        }
-      }
-    }
-  }
-
-  .item-list {
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-
-    .item {
-      &.odd {
-        background-color: #f1f1f1;
-      }
-
-      &.even {
-        //background-color: #f1f1f1;
-      }
-
-      p {
-        margin-top: 0;
-        margin-bottom: 4px;
-        white-space: inherit;
-      }
-
-      .url {
-      }
-
-      .excerpt {
-        p {
-          white-space: normal;
-        }
-        i {
-          font-size: 13px;
         }
       }
     }

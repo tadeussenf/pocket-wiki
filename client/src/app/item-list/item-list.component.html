@@ -4,8 +4,8 @@
     *ngFor="let item of filteredList | slice:pageIndex*pageSize:pageIndex*pageSize+pageSize; let isOdd=odd; let isEven=even"
     class="item"
     [class.odd]="isOdd"
-    [class.even]="isEven">
-
+    [class.even]="isEven"
+  >
     <div matLine>
       <a *ngIf="item" href="{{item.given_url}}" target="_blank">
         <b *ngIf="item.resolved_title != ''" class="title">{{item.resolved_title}}</b>
@@ -25,13 +25,18 @@
       <p>{{item.excerpt}} </p>
     </i>
 
-    <app-tag-input matLine [allTags]="tagList" [itemTags]="item.customTags" [inline]="true"
-                   (updatedTags)="addTags(item.item_id, $event)"></app-tag-input>
+    <app-tag-input
+      matLine
+      [allTags]="tagList"
+      [itemTags]="item.customTags"
+      [inline]="true"
+      (updatedTags)="addTags(item.item_id, $event)"
+    >
+    </app-tag-input>
 
-    <!--<mat-icon>done</mat-icon>-->
-    <button mat-icon-button (click)="showAddTagsModal(item.item_id, item.resolved_title, item.customTags )">
-      <mat-icon>bookmark_border</mat-icon>
-    </button>
+    <!--    <button mat-icon-button (click)="showAddTagsModal(item.item_id, item.resolved_title, item.customTags )">-->
+    <!--      <mat-icon>bookmark_border</mat-icon>-->
+    <!--    </button>-->
 
     <button mat-icon-button (click)="pocket.deleteItem(item.item_id)">
       <mat-icon>delete</mat-icon>

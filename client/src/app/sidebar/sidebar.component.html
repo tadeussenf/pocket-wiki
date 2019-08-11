@@ -1,8 +1,7 @@
-<mat-toolbar>
-  <span>{{username}}</span>
+<mat-toolbar color="primary">
+  <span>Pocket Wiki</span>
 </mat-toolbar>
 
-<!--filter-actions-->
 <div class="filter-actions">
   <button mat-button (click)="onFilterByDate(0)">All items ({{items.length}})</button>
   <button mat-button (click)="onFilterByDate(1)">Last 24 hours</button>
@@ -10,7 +9,6 @@
   <button mat-button (click)="onFilterNoTags()">Not tagged</button>
 </div>
 
-<!--tags-list-->
 <div class="tags-list">
   <h4>Tags ({{tags.length}})</h4>
 

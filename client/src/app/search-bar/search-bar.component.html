@@ -1,15 +1,14 @@
-<div>
-  <form matLine [formGroup]="searchForm" (ngSubmit)="onSubmit(searchForm.value['searchTerm'])">
-    <mat-form-field floatLabel="never">
-      <input matInput (shouldLabelFloat)="false" name="search" type="text" formControlName="searchTerm"
-             placeholder="Search for title or tags">
-      <button mat-button *ngIf="searchForm.value['searchTerm']" matSuffix mat-icon-button aria-label="Clear" type="reset"
-              (click)="resetSearchTerm()">
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
-    <button mat-icon-button type="submit">
-      <mat-icon>search</mat-icon>
+<form [formGroup]="searchForm" (ngSubmit)="onSubmit(searchForm.value['searchTerm'])">
+  <mat-form-field floatLabel="never">
+    <input matInput (shouldLabelFloat)="false" name="search" type="text" formControlName="searchTerm"
+           placeholder="Search for title or tags">
+    <button mat-button *ngIf="searchForm.value['searchTerm']" matSuffix mat-icon-button aria-label="Clear"
+            type="reset"
+            (click)="resetSearchTerm()">
+      <mat-icon>close</mat-icon>
     </button>
-  </form>
-</div>
+  </mat-form-field>
+</form>
+<button mat-icon-button type="submit">
+  <mat-icon>search</mat-icon>
+</button>

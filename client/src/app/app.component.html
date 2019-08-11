@@ -1,4 +1,3 @@
-<!--loading spinner-->
 <div class="spinner" *ngIf="showSpinner">
   <div>
     <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
@@ -6,10 +5,8 @@
   </div>
 </div>
 
-<!--main container-->
-<mat-sidenav-container fullscreen *ngIf="!showSpinner">
+<mat-sidenav-container *ngIf="!showSpinner">
 
-  <!--sidebar-->
   <mat-sidenav [opened]="showSidebar" [mode]="(screenWidth > 840) ? 'side' : 'over'" style="width: 250px">
     <app-sidebar
       [username]="username"
@@ -22,36 +19,32 @@
     ></app-sidebar>
   </mat-sidenav>
 
-  <!--main content-->
   <mat-sidenav-content>
 
-    <mat-toolbar>
-      <!--<span class="content-title">{{filteredList.length}} items</span>-->
+    <mat-toolbar color="primary">
+      <div class="container">
+        <app-search-bar (onSearchSubmit)="onSearchSubmit($event)"></app-search-bar>
 
-      <span class="spacer"></span>
-
-      <!--search bar-->
-      <app-search-bar (onSearchSubmit)="onSearchSubmit($event)"></app-search-bar>
-
-      <span class="spacer"></span>
-      <!--todo show as cards instead of list-->
-      <!--todo show archived items-->
-      <button mat-icon-button (click)="refreshData(false)">
-        <mat-icon>refresh</mat-icon>
-      </button>
+        <!--todo show as cards instead of list-->
+        <!--todo show archived items-->
+        <button mat-icon-button type="button" (click)="refreshData(false)">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
     </mat-toolbar>
 
+    <div class="container">
 
-    <!--search results (tags)-->
-    <app-search-result-list *ngIf="searchTerm && searchTerm.length > 0" [tags]="filteredTags"
-                            (onTagSelected)="filterByTag($event)"></app-search-result-list>
+      <app-search-result-list
+        *ngIf="searchTerm && searchTerm.length > 0"
+        [tags]="filteredTags"
+        (onTagSelected)="filterByTag($event)"
+      >
+      </app-search-result-list>
 
-    <!--item list-->
-    <app-item-list [filteredList]="filteredList" [tags]="tags" (tagsAdded)="onTagsAdded($event)"></app-item-list>
-
+      <app-item-list [filteredList]="filteredList" [tags]="tags" (tagsAdded)="onTagsAdded($event)"></app-item-list>
+      s
+    </div>
   </mat-sidenav-content>
 
-
 </mat-sidenav-container>
-
-
