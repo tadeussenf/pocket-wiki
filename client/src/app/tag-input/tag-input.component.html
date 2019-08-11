@@ -1,0 +1,26 @@
+<form *ngIf="data" #heroForm="ngForm" (ngSubmit)="doSubmit()">
+  <mat-form-field class="demo-chip-list">
+    <mat-chip-list #chipList>
+
+      <mat-chip *ngFor="let tag of data?.tags" [selectable]="true" [removable]="true" (removed)="remove(tag)">
+        {{tag}}
+        <mat-icon matChipRemove *ngIf="true" (click)="remove(tag)">cancel</mat-icon>
+      </mat-chip>
+
+      <input matInput #input type="text" placeholder="Tag this item"
+             [formControl]="tagInput"
+             [matChipInputFor]="chipList"
+             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+             [matChipInputAddOnBlur]="false"
+             (matChipInputTokenEnd)="add($event)"
+             [matAutocomplete]="auto"/>
+
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addFromAutocomplete($event)">
+        <mat-option *ngFor="let tag of filteredTags" [value]="tag.name">
+          {{ tag.name }}
+        </mat-option>
+      </mat-autocomplete>
+
+    </mat-chip-list>
+  </mat-form-field>
+</form>
