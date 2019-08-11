@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
-import {Item} from "../common/Item";
-import {Tag} from "../common/interfaces";
+import {PocketItem, Tag} from "../common/interfaces";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../environments/environment";
 import * as _ from "lodash";
 import {NotificationService} from "./notification.service";
 import {StorageService} from "./storage.service";
+import {Item} from "../common/Item";
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +40,7 @@ export class PocketService {
       return;
     }
 
-    if (!this.storage.list || this.storage.list.length < 1) {
+    if (!this.storage.list || this.storage.list.length === 0) {
       this.loadAllItems(true);
     } else {
       this.loadAllItems(false);
@@ -167,10 +167,7 @@ export class PocketService {
           return
         }
         this.extractDataFromReponse(res.list, forceUpdate);
-
         console.log("loading all data done");
-        this.storage.item$.next(this.storage.filteredList);
-        this.storage.tag$.next(this.storage.tags);
       })
   }
 

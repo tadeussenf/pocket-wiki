@@ -1,10 +1,11 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {AddTagModalData, PocketItem, Tag} from "common/interfaces";
+import {PocketItem, Tag} from "common/interfaces";
 import {StateService} from "./state.service";
 import "rxjs/add/operator/debounceTime";
 import "rxjs/add/observable/combineLatest";
 import {Observable} from "rxjs";
 import {NotificationService} from "./notification.service";
+import {Item} from "../common/Item";
 
 @Component({
   selector: 'app-root',
@@ -15,8 +16,8 @@ import {NotificationService} from "./notification.service";
 export class AppComponent implements OnInit {
   showSpinner: boolean = true;
   username: any;
-  list: PocketItem[] = [];
-  filteredList: PocketItem[] = [];
+  list: Item[] = [];
+  filteredList: Item[] = [];
   tags: Tag[] = [];
   filteredTags: Tag[];
   loadingMessage: string = "Loading";
@@ -34,14 +35,15 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     Observable.combineLatest(this.state.filteredList$, this.state.tag$)
       .debounceTime(50)
-      .subscribe((values: any) => {
-        let [items, tags] = values;
+      .subscribe(([items, tags]) => {
         this.list = items;
         this.filteredList = items;
         this.tags = tags;
         console.log("displaying items", items);
         console.log("displaying tags", tags);
-        this.showSpinner = false;
+        if (this.list && this.list.length > 0) {
+          this.showSpinner = false;
+        }
       });
   }
 
