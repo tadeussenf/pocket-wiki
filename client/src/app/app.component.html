@@ -1,7 +1,7 @@
 <div class="spinner" *ngIf="showSpinner">
   <div>
     <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
-    <p>{{pocket.getLoadingMessageSub() | async}}...</p>
+    <p>{{msg.getSubject() | async}}...</p>
   </div>
 </div>
 
@@ -42,7 +42,7 @@
       >
       </app-search-result-list>
 
-      <app-item-list [filteredList]="filteredList" [tags]="tags" (tagsAdded)="onTagsAdded($event)"></app-item-list>
+      <app-item-list [filteredList]="filteredList" [tags]="tags"></app-item-list>
       s
     </div>
   </mat-sidenav-content>

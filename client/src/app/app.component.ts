@@ -1,9 +1,10 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {AddTagModalData, PocketItem, Tag} from "common/interfaces";
-import {PocketService} from "./pocket.service";
+import {StateService} from "./state.service";
 import "rxjs/add/operator/debounceTime";
 import "rxjs/add/observable/combineLatest";
 import {Observable} from "rxjs";
+import {NotificationService} from "./notification.service";
 
 @Component({
   selector: 'app-root',
@@ -24,13 +25,14 @@ export class AppComponent implements OnInit {
   showSidebar: boolean = true;
 
   constructor(
-    public pocket: PocketService
+    public state: StateService,
+    public msg: NotificationService
   ) {
     this.registerResponsiveHandlers()
   }
 
   ngOnInit(): void {
-    Observable.combineLatest(this.pocket.getItemsSub(), this.pocket.getTagSub())
+    Observable.combineLatest(this.state.filteredList$, this.state.tag$)
       .debounceTime(50)
       .subscribe((values: any) => {
         let [items, tags] = values;
@@ -47,33 +49,25 @@ export class AppComponent implements OnInit {
     this.filteredList = [];
     this.tags = [];
     this.showSpinner = true;
-    this.pocket.loadAllItems(forceUpdate);
+    this.state.loadAllItems(forceUpdate);
 
   }
 
   filterByTag(tag: string) {
-    this.pocket.showItemsForTag(tag);
+    this.state.showItemsForTag(tag);
   }
 
   resetFilter() {
-    this.pocket.resetFilter();
+    this.state.resetFilter();
   }
 
   filterByDate(days: number) {
-    this.pocket.filterByDate(days);
+    this.state.filterByDate(days);
   }
 
   filterNoTags() {
-    this.pocket.filterNoTags();
+    this.state.filterNoTags();
   }
-
-  onTagsAdded(data: {itemId: string, tags: string[]}) {
-    this.pocket.addTags(data.itemId, data.tags);
-  }
-
-  // simpleDrop($event: Event) {
-  //   console.log($event);
-  // }
 
   onSearchSubmit(searchTerm: string) {
     if (!searchTerm || searchTerm.length === 0) {

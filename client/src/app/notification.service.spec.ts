@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { PocketService } from './pocket.service';
+import { NotificationService } from './notification.service';
 
-describe('PocketService', () => {
+describe('NotificationService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: PocketService = TestBed.get(PocketService);
+    const service: NotificationService = TestBed.get(NotificationService);
     expect(service).toBeTruthy();
   });
 });

@@ -1,5 +1,5 @@
-import {NgModule} from '@angular/core';
-import {AppComponent} from './app.component';
+import {NgModule} from "@angular/core";
+import {AppComponent} from "./app.component";
 import {
   MatAutocompleteModule,
   MatButtonModule,
@@ -20,20 +20,18 @@ import {
 } from "@angular/material";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {BrowserModule} from "@angular/platform-browser";
-import {PocketService} from "./pocket.service";
-import {AddTagsModalComponent} from './add-tags-modal/add-tags-modal.component';
+import {StateService} from "./state.service";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {SidebarComponent} from './sidebar/sidebar.component';
-import {ItemListComponent} from './item-list/item-list.component';
-import {SearchBarComponent} from './search-bar/search-bar.component';
-import {SearchResultListComponent} from './search-result-list/search-result-list.component';
+import {SidebarComponent} from "./sidebar/sidebar.component";
+import {ItemListComponent} from "./item-list/item-list.component";
+import {SearchBarComponent} from "./search-bar/search-bar.component";
+import {SearchResultListComponent} from "./search-result-list/search-result-list.component";
 import {HttpClientModule} from "@angular/common/http";
-import { TagInputComponent } from './tag-input/tag-input.component';
+import {TagInputComponent} from "./tag-input/tag-input.component";
 
 @NgModule({
   declarations: [
     AppComponent,
-    AddTagsModalComponent,
     SidebarComponent,
     ItemListComponent,
     SearchBarComponent,
@@ -61,14 +59,12 @@ import { TagInputComponent } from './tag-input/tag-input.component';
     MatPaginatorModule,
     MatFormFieldModule,
     FormsModule,
-    ReactiveFormsModule,
-    // DndModule.forRoot()
+    ReactiveFormsModule
   ],
   providers: [
-    PocketService
+    StateService
   ],
   entryComponents: [
-    AddTagsModalComponent
   ],
   bootstrap: [AppComponent]
 })

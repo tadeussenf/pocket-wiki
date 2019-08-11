@@ -13,7 +13,7 @@ import {MatChipInputEvent, MatChipList} from "@angular/material";
 import {FormControl} from "@angular/forms";
 import {COMMA, SPACE} from "@angular/cdk/keycodes";
 import {Subscription} from "rxjs";
-import {PocketService} from "../pocket.service";
+import {StateService} from "../state.service";
 
 @Component({
   selector: "app-tag-input",
@@ -38,7 +38,7 @@ export class TagInputComponent implements OnInit, AfterViewInit, OnDestroy {
   // todo use https://github.com/Gbuomprisco/ngx-chips
 
   constructor(
-    public pocket: PocketService
+    public pocket: StateService
   ) {
   }
 
