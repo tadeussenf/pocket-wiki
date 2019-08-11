@@ -1,8 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Item} from "../../common/Item";
 import {AddTagModalData, PocketItem, Tag} from "../../common/interfaces";
 import {AddTagsModalComponent} from "../add-tags-modal/add-tags-modal.component";
 import {MatDialog} from "@angular/material";
+import {PocketService} from "../pocket.service";
 
 @Component({
   selector: 'app-item-list',
@@ -16,7 +16,11 @@ export class ItemListComponent implements OnInit {
   pageIndex: number = 0;
   pageSize: number = 25;
 
-  constructor(public dialog: MatDialog) { }
+  constructor(
+    public dialog: MatDialog,
+    public pocket: PocketService
+  ) {
+  }
 
   ngOnInit() {
   }
@@ -45,5 +49,7 @@ export class ItemListComponent implements OnInit {
     });
   }
 
-
+  filterByTag(tag: string) {
+    this.pocket.showItemsForTag(tag);
+  }
 }

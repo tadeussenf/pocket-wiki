@@ -1,4 +1,5 @@
 ﻿export interface PocketItem {
+  customTags: Tags;
   item_id: string;
   status: string;
   time_added: string;

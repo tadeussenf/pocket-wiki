@@ -10,7 +10,7 @@
 <mat-sidenav-container fullscreen *ngIf="!showSpinner">
 
   <!--sidebar-->
-  <mat-sidenav mode="side" opened="true" style="width: 250px">
+  <mat-sidenav [opened]="showSidebar" [mode]="(screenWidth > 840) ? 'side' : 'over'" style="width: 250px">
     <app-sidebar
       [username]="username"
       [tags]="tags"
@@ -43,7 +43,8 @@
 
 
     <!--search results (tags)-->
-    <app-search-result-list *ngIf="searchTerm && searchTerm.length > 0" [tags]="filteredTags" (onTagSelected)="filterByTag($event)"></app-search-result-list>
+    <app-search-result-list *ngIf="searchTerm && searchTerm.length > 0" [tags]="filteredTags"
+                            (onTagSelected)="filterByTag($event)"></app-search-result-list>
 
     <!--item list-->
     <app-item-list [filteredList]="filteredList" [tags]="tags" (tagsAdded)="onTagsAdded($event)"></app-item-list>

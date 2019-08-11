@@ -20,8 +20,13 @@ export class AppComponent implements OnInit {
   filteredTags: Tag[];
   loadingMessage: string = "Loading";
   searchTerm: string;
+  screenWidth: number;
+  showSidebar: boolean = true;
 
-  constructor(public pocket: PocketService) {
+  constructor(
+    public pocket: PocketService
+  ) {
+    this.registerResponsiveHandlers()
   }
 
   ngOnInit(): void {
@@ -93,5 +98,14 @@ export class AppComponent implements OnInit {
     delete this.searchTerm;
     this.filteredTags = this.tags;
     this.filteredList = this.list
+  }
+
+  private registerResponsiveHandlers() {
+    this.screenWidth = window.innerWidth;
+    this.showSidebar = this.screenWidth > 840;
+    window.onresize = () => {
+      this.screenWidth = window.innerWidth;
+      this.showSidebar = this.screenWidth > 840;
+    };
   }
 }
