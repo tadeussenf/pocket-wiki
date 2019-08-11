@@ -12,7 +12,10 @@ import {PocketService} from "../pocket.service";
 export class ItemListComponent implements OnInit {
   @Input() filteredList: PocketItem[];
   @Input() tags: Tag[];
-  @Output() tagsAdded = new EventEmitter<AddTagModalData>();
+  @Output() tagsAdded = new EventEmitter<{itemId: string, tags: string[]}>();
+
+  tagList: string[];
+
   pageIndex: number = 0;
   pageSize: number = 25;
 
@@ -23,6 +26,7 @@ export class ItemListComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.tagList = this.tags.map(tag => tag.name);
   }
 
   updatePage($event: any) {
@@ -30,14 +34,14 @@ export class ItemListComponent implements OnInit {
     this.pageSize = $event.pageSize;
   }
 
-  showAddTagsModal(itemId: number, title: string, tags: string[]): void {
+  showAddTagsModal(itemId: string, title: string, tags: string[]): void {
     let dialogRef = this.dialog.open(AddTagsModalComponent, {
       width: '500px',
       data: {
         itemId: itemId,
         title: title,
         tags: tags,
-        allTags: this.tags
+        allTags: this.tags.map(tag => tag.name)
       }
     });
 
@@ -51,5 +55,9 @@ export class ItemListComponent implements OnInit {
 
   filterByTag(tag: string) {
     this.pocket.showItemsForTag(tag);
+  }
+
+  addTags(item_id: string, tags: string[]) {
+    this.tagsAdded.emit({itemId: item_id, tags: tags})
   }
 }

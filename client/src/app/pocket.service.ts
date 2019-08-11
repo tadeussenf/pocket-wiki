@@ -59,7 +59,7 @@ export class PocketService {
     this.tag$.next(this.tags);
   }
 
-  addTags(itemId: number, tags: string[]) {
+  addTags(itemId: string, tags: string[]) {
     // todo if new tag add to this.tags and recount items
     console.log("adding tags", tags.toString());
     const body = {

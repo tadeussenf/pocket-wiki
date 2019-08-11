@@ -2,7 +2,7 @@
 <p><i>Tab to add a tag, Enter to save item</i></p>
 <div mat-dialog-content>
 
-  <app-tag-input [data]="data" (updatedData)="data = $event"></app-tag-input>
+  <app-tag-input [allTags]="data.allTags" [itemTags]="data.tags" (updatedTags)="data = $event"></app-tag-input>
 
 </div>
 <div mat-dialog-actions>

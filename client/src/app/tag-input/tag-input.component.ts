@@ -12,10 +12,8 @@ import {
 import {MatChipInputEvent, MatChipList} from "@angular/material";
 import {FormControl} from "@angular/forms";
 import {COMMA, SPACE} from "@angular/cdk/keycodes";
-import {AddTagModalData, Tag} from "../../common/interfaces";
 import {Subscription} from "rxjs";
 import {PocketService} from "../pocket.service";
-import * as _ from "lodash";
 
 @Component({
   selector: "app-tag-input",
@@ -23,16 +21,17 @@ import * as _ from "lodash";
   styleUrls: ["./tag-input.component.scss"]
 })
 export class TagInputComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input() data: AddTagModalData;
-  @Output() updatedData = new EventEmitter<AddTagModalData>();
+  @Input() allTags: string[];
+  @Input() itemTags: string[];
+  @Input() inline: boolean = false;
+  @Output() updatedTags = new EventEmitter<string[]>();
+
   @ViewChild("input", {static: false}) input: ElementRef;
   @ViewChild("chipList", {static: false}) chipList: MatChipList;
 
   tagInput: FormControl = new FormControl();
   separatorKeysCodes = [COMMA, SPACE];
-  private oldTags: string[];
-  private tags: Tag[];
-  filteredTags: Tag[];
+  filteredTags: string[];
   private tagInputSub: Subscription;
 
   // we need to do some ugly stuff in order to get both chips and autocomplete working
@@ -44,29 +43,32 @@ export class TagInputComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.tags = this.data.allTags;
     this.filteredTags = [];
-    this.oldTags = this.data.tags;
+
+    this.tagInputSub = this.tagInput.valueChanges
+      .debounceTime(300)
+      .subscribe(value => {
+        this.filteredTags = this.allTags.filter(item => item.startsWith(value));
+      });
   }
 
   ngAfterViewInit() {
-    this.tagInputSub = this.tagInput.valueChanges
-      .debounceTime(300)
-      .subscribe(val => {
-        this.filteredTags = val ? _.filter(this.tags, (item: Tag) => item.name.startsWith(val)) : [];
-      });
-    setTimeout(() => {
-      this.chipList._focusInput();
-    }, 1000);
-    console.log("view init");
+    if (!this.inline) {
+      setTimeout(() => {
+        this.chipList._focusInput();
+      }, 1000);
+    }
   }
 
   add(event: MatChipInputEvent): void {
     console.log("add", event.value);
-    if (event.value.length > 0 && this.data.tags.indexOf(event.value) < 0) { // does not exist
+    if (event.value.length > 0 && this.itemTags.indexOf(event.value) < 0) { // does not exist
       console.log("add value", event.value);
-      this.data.tags.push(event.value);
+      this.itemTags.push(event.value);
       event.input.value = "";
+      if (this.inline) {
+        this.doSubmit();
+      }
     } else {
       console.log("remove input");
       event.input.value = "";
@@ -81,21 +83,15 @@ export class TagInputComponent implements OnInit, AfterViewInit, OnDestroy {
 
   remove(tag: any): void {
     console.log("remove");
-    const index = this.data.tags.indexOf(tag);
+    const index = this.allTags.indexOf(tag);
 
     if (index >= 0) {
-      this.data.tags.splice(index, 1);
+      this.allTags.splice(index, 1);
     }
-    console.log(this.data.tags);
   }
 
   doSubmit() {
-    console.log("doSubmit");
-    this.updatedData.emit(this.data);
-  }
-
-  onNoClick(): void {
-    this.data.tags = this.oldTags;
+    this.updatedTags.emit(this.itemTags);
   }
 
   ngOnDestroy(): void {

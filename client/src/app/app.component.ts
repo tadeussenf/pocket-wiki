@@ -67,7 +67,7 @@ export class AppComponent implements OnInit {
     this.pocket.filterNoTags();
   }
 
-  onTagsAdded(data: AddTagModalData) {
+  onTagsAdded(data: {itemId: string, tags: string[]}) {
     this.pocket.addTags(data.itemId, data.tags);
   }
 

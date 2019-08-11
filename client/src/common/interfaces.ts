@@ -1,5 +1,5 @@
 ﻿export interface PocketItem {
-  customTags: Tags;
+  customTags: string[];
   item_id: string;
   status: string;
   time_added: string;
@@ -52,7 +52,7 @@ export interface Image {
 }
 
 export interface AddTagModalData {
-  itemId: number,
+  itemId: string,
   title: string,
   tags: string[],
   allTags: Tag[]

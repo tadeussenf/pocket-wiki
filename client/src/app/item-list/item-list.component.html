@@ -25,11 +25,8 @@
       <p>{{item.excerpt}} </p>
     </i>
 
-    <mat-chip-list matLine>
-      <mat-chip *ngFor="let tag of item.customTags">
-        <a style="cursor: pointer" (click)="filterByTag(tag)">{{tag}}</a>
-      </mat-chip>
-    </mat-chip-list>
+    <app-tag-input matLine [allTags]="tagList" [itemTags]="item.customTags" [inline]="true"
+                   (updatedTags)="addTags(item.item_id, $event)"></app-tag-input>
 
     <!--<mat-icon>done</mat-icon>-->
     <button mat-icon-button (click)="showAddTagsModal(item.item_id, item.resolved_title, item.customTags )">
