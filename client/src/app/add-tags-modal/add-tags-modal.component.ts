@@ -1,5 +1,6 @@
 import {Component, Inject} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
+import {PocketService} from "../pocket.service";
 import {AddTagModalData} from "../../common/interfaces";
 import "rxjs/add/operator/map";
 import "rxjs/add/operator/throttleTime";
@@ -16,13 +17,16 @@ export class AddTagsModalComponent {
   // we need to do some ugly stuff in order to get both chips and autocomplete working
   // todo use https://github.com/Gbuomprisco/ngx-chips
 
-  constructor(
-    public dialogRef: MatDialogRef<AddTagsModalComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: AddTagModalData
-  ) {
+  constructor(public dialogRef: MatDialogRef<AddTagsModalComponent>,
+              @Inject(MAT_DIALOG_DATA) public data: AddTagModalData,
+              public pocket: PocketService) {
   }
 
   doSubmit() {
     this.dialogRef.close(this.data);
+  }
+
+  onNoClick(): void {
+    this.dialogRef.close();
   }
 }
