@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  pocketApiUrl: "https://rly.lepus.uberspace.de/pocket/",
-  redirectUrl: "https://rly.lepus.uberspace.de/ui-for-pocket/"
+  pocketApiUrl: "https://tadeus.uber.space/pocket-wiki/server/",
+  redirectUrl: "https://tadeus.uber.space/pocket-wiki/"
 };

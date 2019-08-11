@@ -1,6 +1,6 @@
-import {Injectable} from '@angular/core';
+import {Injectable} from "@angular/core";
 import {Tag} from "../common/interfaces";
-import * as _ from 'lodash';
+import * as _ from "lodash";
 import {environment} from "../environments/environment";
 import {ReplaySubject} from "rxjs";
 import {Item} from "../common/Item";
@@ -12,8 +12,8 @@ export class PocketService {
   private accessToken: any;
   private consumerKey = "71520-12304220fa8fcbd039b9be34";
   private headers = {
-    'Content-Type': 'application/json',
-    'X-Accept': 'application/json'
+    "Content-Type": "application/json",
+    "X-Accept": "application/json"
   };
   private requestToken: string;
 
@@ -23,7 +23,7 @@ export class PocketService {
   list: Item[] = [];
   filteredList: Item[];
   tags: Tag[] = [];
-  private refreshDataInterval: number = 60; // minutes
+  private refreshDataInterval = 60; // minutes
 
   // observable stuff
   item$ = new ReplaySubject(1);
@@ -33,9 +33,6 @@ export class PocketService {
   constructor(
     private httpClient: HttpClient
   ) {
-    console.log("init service");
-    console.log(environment);
-
     this.lastUpdateTime = parseInt(localStorage.getItem("pocket-lastUpdateTime"));
     this.username = localStorage.getItem("pocket-username");
     this.accessToken = localStorage.getItem("pocket-accessToken");
@@ -46,20 +43,17 @@ export class PocketService {
       this.authenticateWithPocket();
       return;
     }
-    // else if (this.dataOutdated()) {
-    //   this.loadAllItems(false);
-    //   return;
-    // }
 
     this.tags = JSON.parse(localStorage.getItem("pocket-tags"));
     this.list = JSON.parse(localStorage.getItem("pocket-list"));
 
-    if (this.dataOutdated() || !this.list || this.list.length < 1 || !this.tags || this.tags.length < 1) {
+    if (!this.list || this.list.length < 1 || !this.tags || this.tags.length < 1) {
       this.loadAllItems(true);
       return;
+    } else {
+      this.loadAllItems(false);
     }
 
-    console.log("sorting all items");
     this.filteredList = this.list;
     this.item$.next(this.filteredList);
     this.tag$.next(this.tags);
@@ -68,7 +62,7 @@ export class PocketService {
   addTags(itemId: number, tags: string[]) {
     // todo if new tag add to this.tags and recount items
     console.log("adding tags", tags.toString());
-    let body = {
+    const body = {
       "consumer_key": this.consumerKey,
       "access_token": this.accessToken,
       actions: [{
@@ -92,7 +86,7 @@ export class PocketService {
   }
 
   deleteItem(itemId) {
-    let body = {
+    const body = {
       "consumer_key": this.consumerKey,
       "access_token": this.accessToken,
       actions: [{
@@ -107,7 +101,6 @@ export class PocketService {
           // todo add tags to local copy
           this.deleteItemFromLocalDataCopy(itemId);
           this.saveAllDataToLocalStorage();
-          console.log(res);
         },
         err => {
           console.error(err.json())
@@ -123,13 +116,11 @@ export class PocketService {
     if (this.requestToken) {
       // todo: getAccessToken()
       this.loadingMessageSub.next("Authenticating with pocket");
-      console.log("found requestToken in LS");
       this.httpClient.post<any>(environment.pocketApiUrl + "v3/oauth/authorize", {
         "consumer_key": this.consumerKey,
         "code": this.requestToken
       }, {headers: this.headers}).subscribe(
         (res) => {
-          console.log(res);
           this.username = res.username;
           this.accessToken = res.access_token;
           localStorage.setItem("pocket-accessToken", this.accessToken);
@@ -148,11 +139,8 @@ export class PocketService {
         "consumer_key": this.consumerKey,
         "redirect_uri": environment.redirectUrl
       }).subscribe((res: any) => {
-          let response = res;
-          console.log(response);
-
-          if (!response.access_token) {
-            this.requestToken = response.code;
+          if (!res.access_token) {
+            this.requestToken = res.code;
             localStorage.setItem("pocket-requestToken", this.requestToken);
             console.log("requestToken", this.requestToken);
 
@@ -167,9 +155,9 @@ export class PocketService {
 
   public loadAllItems(forceUpdate: boolean) {
     this.loadingMessageSub.next("Fetching all items from pocket");
-    console.log("loading all data, force:", forceUpdate);
+    console.log("loading data, force:", forceUpdate);
 
-    let body = {
+    const body = {
       "consumer_key": this.consumerKey,
       "access_token": this.accessToken,
       "detailType": "complete",
@@ -210,11 +198,11 @@ export class PocketService {
   }
 
   filterByDate(days: number) {
-    console.log("filterByDate");
+    console.log("filterByDate", days);
     if (days === 0) {
       this.filteredList = this.list;
     } else {
-      let range = (Date.now() / 1000) - (days * 24 * 60 * 60);
+      const range = (Date.now() / 1000) - (days * 24 * 60 * 60);
       this.filteredList = _.filter(this.list, (item: Item) => {
         return parseInt(item.time_added) > range;
       })
@@ -247,19 +235,12 @@ export class PocketService {
   }
 
   resetFilter() {
-    console.log("resetFilter");
+    console.log("resetFilters");
     this.filteredList = this.list;
     this.item$.next(this.filteredList);
   }
 
-  private dataOutdated(): boolean {
-    let boolean = this.lastUpdateTime < (Date.now() / 1000) - (60 * this.refreshDataInterval);
-    console.log("Data outdated: " + boolean);
-    return boolean // if last time update was more than 5 min ago
-  }
-
   private saveAllDataToLocalStorage() {
-    console.log("saveAllDataToLocalStorage");
     this.loadingMessageSub.next("Saving data to local storage");
     localStorage.setItem("pocket-tags", JSON.stringify(this.tags));
     localStorage.setItem("pocket-list", JSON.stringify(this.list));
@@ -268,14 +249,13 @@ export class PocketService {
   private extractDataFromReponse(input: any, forceUpdate: boolean) {
     // get tag list from all items
     this.loadingMessageSub.next("Extracting metadata");
-    console.log("extractDataFromReponse");
 
-    let transfer = this.convertToItem(input);
-    let list: Item[] = transfer.list;
-    let tags: string[] = transfer.tags;
+    const transfer = this.convertToItem(input);
+    const list: Item[] = transfer.list;
+    const tags: string[] = transfer.tags;
 
     // get item per tag count
-    let tagsWithCount: Tag[] = tags.map((tag: string) => {
+    const tagsWithCount: Tag[] = tags.map((tag: string) => {
       return {name: tag, count: _.filter(list, item => item.customTags.includes(tag)).length}
     });
 
@@ -283,26 +263,19 @@ export class PocketService {
       console.log("merging partial data");
       this.mergePartialData(list, tagsWithCount);
     } else {
-      console.log("replace data");
       this.tags = tagsWithCount;
       this.list = list;
     }
 
-    console.log("sorting tags");
-    this.tags = _.orderBy(this.tags, ['count'], ['desc']);
-    console.log("sorting items");
-    this.list = _.orderBy(this.list, ['time_added'], ['desc']);
+    this.tags = _.orderBy(this.tags, ["count"], ["desc"]);
+    this.list = _.orderBy(this.list, ["time_added"], ["desc"]);
     this.filteredList = this.list;
-
-    console.log(this.tags);
-    console.log(this.list);
-    console.log(this.filteredList);
   }
 
   private mergePartialData(inputList: Item[], inputTags: Tag[]) {
     console.log("merging items", inputList);
     inputList.forEach((item) => {
-      let index = _.findIndex(this.list, existing => existing.item_id === item.item_id);
+      const index = _.findIndex(this.list, existing => existing.item_id === item.item_id);
 
       if (parseInt(item.status) === 2) {
         if (this.list[index] && this.list[index].item_id === item.item_id) {
@@ -317,9 +290,8 @@ export class PocketService {
       }
     });
 
-    console.log("merging tags");
     inputTags.forEach((tag) => {
-      let index = _.findIndex(this.tags, existing => existing.name === tag.name);
+      const index = _.findIndex(this.tags, existing => existing.name === tag.name);
       if (index >= 0) {
         this.tags[index] = {
           name: tag.name,
@@ -333,12 +305,11 @@ export class PocketService {
 
   // remove not needed properties form pocket items for storage reasons and get list of all tags
   convertToItem(input: any) {
-    console.log("convert to item", input);
-    let list: Item[] = [];
-    let tags = [];
+    const list: Item[] = [];
+    const tags = [];
 
-    for (let pocketItem in input) {
-      let item = new Item(
+    for (const pocketItem in input) {
+      const item = new Item(
         input[pocketItem].item_id,
         input[pocketItem].time_added,
         input[pocketItem].status,
@@ -349,7 +320,7 @@ export class PocketService {
         new Array(0)
       );
 
-      for (let tag in input[pocketItem].tags) {
+      for (const tag in input[pocketItem].tags) {
         item.customTags.push(tag);
         if (tags.indexOf(tag) < 0) { // does not exist
           tags.push(tag)
@@ -367,12 +338,12 @@ export class PocketService {
   }
 
   private deleteItemFromLocalDataCopy(itemId: string) {
-    let index = _.findIndex(this.list, existing => existing.item_id === itemId);
+    const index = _.findIndex(this.list, existing => existing.item_id === itemId);
     console.log("deleting item with index", index, this.list[index]);
 
     this.list[index].customTags.forEach((tagName) => {
-      let tag = _.find(this.tags, tag => tag.name === tagName);
-      let index = _.findIndex(this.tags, tag);
+      const tag = _.find(this.tags, tag => tag.name === tagName);
+      const index = _.findIndex(this.tags, tag);
       if (tag.count === 1) {
         this.tags.splice(index, 1);
       } else {

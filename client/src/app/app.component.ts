@@ -22,7 +22,6 @@ export class AppComponent implements OnInit {
   searchTerm: string;
 
   constructor(public pocket: PocketService) {
-    console.log("constructor done");
   }
 
   ngOnInit(): void {
@@ -33,8 +32,8 @@ export class AppComponent implements OnInit {
         this.list = items;
         this.filteredList = items;
         this.tags = tags;
-        console.log("recieved items", items);
-        console.log("recieved tags", tags);
+        console.log("displaying items", items);
+        console.log("displaying tags", tags);
         this.showSpinner = false;
       });
   }

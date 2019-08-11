@@ -6,6 +6,7 @@ app.use(bodyParser.json());
 
 app.all("/*", function (req, res) {
 
+  // todo remove url parts not needed
   var newurl = "https://getpocket.com" + req.url + ".php"; // WTF why add .php??? Redirects are allowed!
   var headers = {
     "content-type": "application/json",
