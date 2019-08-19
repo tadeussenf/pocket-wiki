@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {PocketItem, Tag} from "../common/interfaces";
-import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
+import {Headers, Http, RequestOptionsArgs} from "@angular/http";
 import * as _ from 'lodash';
 import {environment} from "../environments/environment";
 import {ReplaySubject} from "rxjs/ReplaySubject";
@@ -15,7 +15,7 @@ export class PocketService {
     'Content-Type': 'application/json',
     'X-Accept': 'application/json'
   });
-  private options = { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) };
+  private options: RequestOptionsArgs = {'headers': this.headers};
   private requestToken: string;
 
   // data stuff
@@ -31,7 +31,7 @@ export class PocketService {
   tag$ = new ReplaySubject(1);
   loadingMessageSub = new ReplaySubject(1);
 
-  constructor(private http: HttpClient) {
+  constructor(private http: Http) {
     console.log("init service");
     console.log(environment);
 
@@ -84,7 +84,7 @@ export class PocketService {
         res => {
           // todo add tags to local copy
           this.saveAllDataToLocalStorage();
-          console.log(res);
+          console.log(res.json());
         },
         err => {
           console.error(err.json())
@@ -108,7 +108,7 @@ export class PocketService {
           // todo add tags to local copy
           this.deleteItemFromLocalDataCopy(itemId);
           this.saveAllDataToLocalStorage();
-          console.log(res);
+          console.log(res.json());
         },
         err => {
           console.error(err.json())
@@ -129,7 +129,7 @@ export class PocketService {
         "consumer_key": this.consumerKey,
         "code": this.requestToken
       }, this.options).subscribe(
-        (res: any) => {
+        (res) => {
           let response = res.json();
           console.log(response);
           this.username = response.username;
@@ -186,7 +186,7 @@ export class PocketService {
     }
 
     this.http.post(environment.pocketApiUrl + "v3/get", body)
-      .subscribe((res:any) => {
+      .subscribe((res) => {
         let response = res.json();
         this.lastUpdateTime = response.since;
 

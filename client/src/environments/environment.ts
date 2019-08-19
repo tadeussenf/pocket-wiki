@@ -5,6 +5,6 @@
 
 export const environment = {
   production: false,
-  pocketApiUrl: "http://localhost:1337/",
+  pocketApiUrl: "/",
   redirectUrl: "https://localhost:4200/"
 };
