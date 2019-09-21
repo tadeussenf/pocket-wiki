@@ -48,7 +48,7 @@ export class TagInputComponent implements OnInit, AfterViewInit, OnDestroy {
     this.tagInputSub = this.tagInput.valueChanges
       .debounceTime(300)
       .subscribe(value => {
-        this.filteredTags = this.allTags.filter(item => item.startsWith(value));
+        this.filteredTags = this.allTags.filter(item => item.startsWith(value.toLowerCase()));
       });
   }
 

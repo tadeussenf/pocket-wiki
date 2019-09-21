@@ -4,8 +4,7 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --proxy-config cors-proxy.json --ssl",
-    "start:node": "ng serve --proxy-config node-proxy.json --ssl",
+    "start": "ng serve --proxy-config node-proxy.json --ssl",
     "build": "ng build --prod --base-href /pocket-wiki/",
     "deploy": "scp -r dist/* tadeus@kojima.uberspace.de:html/pocket-wiki/",
     "test": "ng test",
