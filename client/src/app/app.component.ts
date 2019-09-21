@@ -81,10 +81,10 @@ export class AppComponent implements OnInit {
     this.filteredTags = this.tags.filter(tag => tag.name.toLowerCase() === searchTerm.toLowerCase());
     this.filteredList = this.list.filter(item => {
 
-      if (item.resolved_title) {
-        return item.resolved_title.toLowerCase().includes(searchTerm.toLowerCase());
-      } else {
+      if (item.given_title) {
         return item.given_title.toLowerCase().includes(searchTerm.toLowerCase());
+      } else {
+        return item.resolved_title.toLowerCase().includes(searchTerm.toLowerCase());
       }
     });
     this.searchTerm = searchTerm;
