@@ -28,6 +28,8 @@ import {SearchBarComponent} from "./search-bar/search-bar.component";
 import {SearchResultListComponent} from "./search-result-list/search-result-list.component";
 import {HttpClientModule} from "@angular/common/http";
 import {TagInputComponent} from "./tag-input/tag-input.component";
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -59,7 +61,8 @@ import {TagInputComponent} from "./tag-input/tag-input.component";
     MatPaginatorModule,
     MatFormFieldModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [
     StateService
