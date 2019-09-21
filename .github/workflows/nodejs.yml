@@ -17,10 +17,16 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: npm install, build, and test
+    - name: build
       run: |
         cd client
         npm install
         npm run build
       env:
         CI: true
+    - name: deploy
+      uses: maddox/actions/ssh@master
+      env:
+        PRIVATE_KEY: ${{ secrets. TADEUS_UBERSPACE_SSH_KEY }}
+      with:
+        args: npm run deploy
