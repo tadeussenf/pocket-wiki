@@ -8,9 +8,8 @@
   >
     <div matLine>
       <a *ngIf="item" href="{{item.given_url}}" target="_blank">
-        <b *ngIf="item.resolved_title != ''" class="title">{{item.resolved_title}}</b>
-        <b *ngIf="!item.resolved_title || item.resolved_title === '' || item.resolved_title.length <= 20"
-           class="title">{{item.given_title}}</b>
+        <b class="title">{{item.given_title}}</b>
+        <b *ngIf="!item.given_title" class="title">{{item.resolved_title}}</b>
       </a>
       &nbsp;
       <small class="date-added" *ngIf="item.time_added"><i>{{item.time_added + '000' | date}}</i></small>
