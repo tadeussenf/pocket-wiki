@@ -8,8 +8,8 @@
   >
     <div matLine>
       <a *ngIf="item" href="{{item.given_url}}" target="_blank">
-        <b class="title">{{item.given_title}}</b>
-        <b *ngIf="!item.given_title" class="title">{{item.resolved_title}}</b>
+        <b class="title">{{item.resolved_title}}</b>
+        <b *ngIf="!item.resolved_title" class="title">{{item.given_title}}</b>
       </a>
       &nbsp;
       <small class="date-added" *ngIf="item.time_added"><i>{{item.time_added + '000' | date}}</i></small>
@@ -34,6 +34,10 @@
     </app-tag-input>
 
     <button mat-icon-button (click)="pocket.deleteItem(item.item_id)">
+      <mat-icon>archive</mat-icon>
+    </button>
+
+    <button mat-icon-button (click)="pocket.archiveItem(item.item_id)">
       <mat-icon>delete</mat-icon>
     </button>
 

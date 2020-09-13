@@ -72,12 +72,34 @@ export class PocketService {
       )
   }
 
-  deleteItem(itemId) {
+  deleteItem(itemId: string) {
     const body = {
       "consumer_key": this.consumerKey,
       "access_token": this.accessToken,
       actions: [{
         action: "delete",
+        item_id: itemId,
+        time: Date.now() - 1000
+      }]
+    };
+    this.httpClient.post(environment.pocketApiUrl + "v3/send", body)
+      .subscribe(
+        res => {
+          // todo add tags to local copy
+          this.deleteItemFromLocalDataCopy(itemId);
+        },
+        err => {
+          console.error(err.json())
+        }
+      )
+  }
+
+  archiveItem(itemId: string) {
+    const body = {
+      "consumer_key": this.consumerKey,
+      "access_token": this.accessToken,
+      actions: [{
+        action: "archive",
         item_id: itemId,
         time: Date.now() - 1000
       }]

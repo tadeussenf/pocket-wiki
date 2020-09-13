@@ -39,8 +39,12 @@ export class StateService {
     this.pocket.addTags(itemId, tags);
   }
 
-  deleteItem(itemId) {
+  deleteItem(itemId: string) {
     this.pocket.deleteItem(itemId)
+  }
+
+  archiveItem(itemId: string) {
+    this.pocket.archiveItem(itemId)
   }
 
   showItemsForTag(tag: string) {
