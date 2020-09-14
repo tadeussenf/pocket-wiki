@@ -33,13 +33,13 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    Observable.combineLatest(this.state.filteredList$, this.state.tag$)
+    Observable.combineLatest(this.state.allItems$, this.state.filteredItems$, this.state.tag$)
       .debounceTime(50)
-      .subscribe(([items, tags]) => {
-        this.list = items;
-        this.filteredList = items;
+      .subscribe(([allItems, filteredItems, tags]) => {
+        this.list = allItems;
+        this.filteredList = filteredItems;
         this.tags = tags;
-        console.log("displaying items", items);
+        console.log("displaying items", filteredItems);
         console.log("displaying tags", tags);
         if (this.list && this.list.length > 0) {
           this.showSpinner = false;

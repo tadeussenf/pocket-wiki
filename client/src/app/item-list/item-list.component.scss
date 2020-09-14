@@ -26,5 +26,21 @@
         font-size: 13px;
       }
     }
+
+    .item-header {
+      display: flex;
+      align-items: baseline;
+
+      a {
+        flex-grow: 8;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      small {
+        display: flex;
+      }
+    }
   }
 }

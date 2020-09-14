@@ -2,7 +2,13 @@
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 //@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
+  height: 100%;
   font-family: Roboto, sans-serif;
 }
 

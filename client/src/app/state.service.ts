@@ -9,10 +9,12 @@ import {Tag} from "../common/interfaces";
 
 @Injectable()
 export class StateService {
-  private list: Item[];
+  private allItems: Item[];
   private tags: Tag[];
-  private filteredList: Item[];
-  filteredList$ = new ReplaySubject<Item[]>(1);
+  private filteredItems: Item[];
+
+  allItems$ = new ReplaySubject<Item[]>(1);
+  filteredItems$ = new ReplaySubject<Item[]>(1);
   tag$ = new ReplaySubject<Tag[]>(1);
 
   constructor(
@@ -25,12 +27,13 @@ export class StateService {
       this.storage.getItem$(),
       this.storage.getTag$()
     ).subscribe(([items, tags]) => {
-        this.list = items;
+        this.allItems = items;
         this.tags = tags;
 
-        this.filteredList$.next(this.list);
+        this.allItems$.next(this.allItems);
+        this.filteredItems$.next(this.allItems);
         this.tag$.next(this.tags);
-        this.filteredList = this.list;
+        this.filteredItems = this.allItems;
       }
     );
   }
@@ -49,37 +52,37 @@ export class StateService {
 
   showItemsForTag(tag: string) {
     console.log("showItemsForTag", tag);
-    this.filteredList = _.filter(this.list, (item: Item) => {
+    this.filteredItems = _.filter(this.allItems, (item: Item) => {
       return item.customTags.includes(tag);
     });
 
-    console.log("emit filteredList", this.filteredList);
-    this.filteredList$.next(this.filteredList);
+    console.log("emit filteredList", this.filteredItems);
+    this.filteredItems$.next(this.filteredItems);
   }
 
   filterByDate(days: number) {
     console.log("filterByDate", days);
     if (days === 0) {
-      this.filteredList = this.list;
+      this.filteredItems = this.allItems;
     } else {
       const range = (Date.now() / 1000) - (days * 24 * 60 * 60);
-      this.filteredList = _.filter(this.list, (item: Item) => {
+      this.filteredItems = _.filter(this.allItems, (item: Item) => {
         return parseInt(item.time_added) > range;
       })
     }
 
-    console.log("emit filteredList", this.filteredList);
-    this.filteredList$.next(this.filteredList);
+    console.log("emit filteredList", this.filteredItems);
+    this.filteredItems$.next(this.filteredItems);
   }
 
   filterNoTags() {
     console.log("filterNoTags");
-    this.filteredList = _.filter(this.list, (item: Item) => {
+    this.filteredItems = _.filter(this.allItems, (item: Item) => {
       return item.customTags.length === 0;
     });
 
-    console.log("emit filteredList", this.filteredList);
-    this.filteredList$.next(this.filteredList);
+    console.log("emit filteredList", this.filteredItems);
+    this.filteredItems$.next(this.filteredItems);
   }
 
   simpleDrop($event: Event) {
@@ -87,8 +90,8 @@ export class StateService {
   }
 
   resetFilter() {
-    this.filteredList = this.list;
-    this.filteredList$.next(this.list);
+    this.filteredItems = this.allItems;
+    this.filteredItems$.next(this.allItems);
   }
 
   loadAllItems(forceUpdate: boolean) {

@@ -72,6 +72,32 @@ export class PocketService {
       )
   }
 
+  removeTags(itemId: string, tags: string[]) {
+    // todo if new tag add to this.tags and recount items
+    console.log("removing tags", tags.toString());
+    const body = {
+      "consumer_key": this.consumerKey,
+      "access_token": this.accessToken,
+      actions: [{
+        action: "tags_remove",
+        item_id: itemId,
+        tags: tags.toString(),
+        time: Date.now() - 1000
+      }]
+    };
+
+    this.httpClient.post(environment.pocketApiUrl + "v3/send", body)
+      .subscribe(
+        res => {
+          // todo remove tags from local copy
+        },
+        err => {
+          console.error(err.json())
+        }
+      )
+  }
+
+
   deleteItem(itemId: string) {
     const body = {
       "consumer_key": this.consumerKey,
