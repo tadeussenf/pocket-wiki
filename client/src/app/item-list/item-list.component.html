@@ -33,12 +33,12 @@
     </app-tag-input>
 
     <div matLine>
-      <button mat-button (click)="pocket.deleteItem(item.item_id)">
+      <button mat-button (click)="pocket.archiveItem(item.item_id)">
         <mat-icon>archive</mat-icon>
         Archive
       </button>
 
-      <button mat-button (click)="pocket.archiveItem(item.item_id)">
+      <button mat-button (click)="pocket.deleteItem(item.item_id)">
         <mat-icon>delete</mat-icon>
         Delete
       </button>
