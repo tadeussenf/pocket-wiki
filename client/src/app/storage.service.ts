@@ -21,7 +21,7 @@ export class StorageService {
   ) {
     this.tags = JSON.parse(localStorage.getItem("pocket-tags"));
     this.list = JSON.parse(localStorage.getItem("pocket-list")).filter(function (e) {
-      return e.status !== '1';
+      return e.status === '0';
     });
   }
 
