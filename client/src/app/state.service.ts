@@ -43,6 +43,9 @@ export class StateService {
   }
 
   deleteItem(itemId: string) {
+    if (!window.confirm('Are you sure?'))
+      return;
+    
     this.pocket.deleteItem(itemId)
   }
 
