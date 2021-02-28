@@ -18,6 +18,7 @@ app.all("/*", function (req, res) {
   console.log(newurl);
 
   request({
+    method: 'post',
     url: newurl,
     headers: headers,
     body: req.body,
