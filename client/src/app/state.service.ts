@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {Item} from "../common/Item";
 import {PocketService} from "./pocket.service";
-import {ReplaySubject, zip} from "rxjs";
+import {combineLatest, ReplaySubject, zip} from "rxjs";
 import {StorageService} from "./storage.service";
 import {Tag} from "../common/interfaces";
 
@@ -21,12 +21,13 @@ export class StateService {
     private storage: StorageService,
   ) {
     console.log("init");
-    zip(
+    combineLatest([
       this.storage.getItem$(),
       this.storage.getTag$()
-    ).subscribe(async ([items, tags]) => {
+    ]).subscribe(async ([items, tags]) => {
         this.list = items;
         this.tags = tags;
+        console.log(items);
 
         if (this.isFirstRun) {
           this.isFirstRun = false;
@@ -40,7 +41,7 @@ export class StateService {
     );
   }
 
-  async addTags(itemId: string, tags: string[]) {
+  async addTagsToItem(itemId: string, tags: string[]) {
     // todo update local state
     await this.pocket.addTags(itemId, tags);
   }
@@ -113,5 +114,9 @@ export class StateService {
     if (!this.pocket.isAuthenticated()) {
       await this.pocket.authenticateWithPocket();
     }
+  }
+
+  async removeTagsFromItem(itemId: string, tag: string[]) {
+    await this.pocket.removeTags(itemId, tag)
   }
 }

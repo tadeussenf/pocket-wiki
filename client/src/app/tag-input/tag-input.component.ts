@@ -26,6 +26,7 @@ export class TagInputComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() itemTags: string[];
   @Input() inline: boolean = false;
   @Output() updatedTags = new EventEmitter<string[]>();
+  @Output() removedTags = new EventEmitter<string[]>();
 
   @ViewChild("input") input: ElementRef;
   @ViewChild("chipList") chipList: MatChipList;
@@ -39,7 +40,7 @@ export class TagInputComponent implements OnInit, AfterViewInit, OnDestroy {
   // todo use https://github.com/Gbuomprisco/ngx-chips
 
   constructor(
-    public pocket: StateService
+    public state: StateService
   ) {
   }
 
@@ -83,6 +84,7 @@ export class TagInputComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   remove(tag: string): void {
+    this.removedTags.emit([tag])
     const index = this.allTags.indexOf(tag);
 
     if (index >= 0) {

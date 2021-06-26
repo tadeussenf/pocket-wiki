@@ -149,6 +149,4 @@ export class StorageService {
 
     this.list.splice(index, 1);
   }
-
-
 }

@@ -62,6 +62,7 @@ export class PocketService {
       }]
     )
     // todo add tags to local copy
+    // todo dont delete, archive!
     this.storage.deleteItemFromLocalDataCopy(itemId);
   }
 
