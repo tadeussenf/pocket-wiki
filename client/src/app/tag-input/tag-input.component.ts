@@ -9,7 +9,7 @@ import {
   Output,
   ViewChild
 } from "@angular/core";
-import {MatChipInputEvent, MatChipList} from "@angular/material";
+import { MatChipInputEvent, MatChipList } from "@angular/material/chips";
 import {FormControl} from "@angular/forms";
 import {COMMA, SPACE} from "@angular/cdk/keycodes";
 import {Subscription} from "rxjs";
@@ -26,8 +26,8 @@ export class TagInputComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() inline: boolean = false;
   @Output() updatedTags = new EventEmitter<string[]>();
 
-  @ViewChild("input", {static: false}) input: ElementRef;
-  @ViewChild("chipList", {static: false}) chipList: MatChipList;
+  @ViewChild("input") input: ElementRef;
+  @ViewChild("chipList") chipList: MatChipList;
 
   tagInput: FormControl = new FormControl();
   separatorKeysCodes = [COMMA, SPACE];
