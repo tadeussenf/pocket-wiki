@@ -1,6 +1,5 @@
-import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
+import {Component, Input, OnInit} from "@angular/core";
 import {PocketItem, Tag} from "../../common/interfaces";
-import { MatDialog } from "@angular/material/dialog";
 import {StateService} from "../state.service";
 
 @Component({
@@ -26,7 +25,7 @@ export class ItemListComponent implements OnInit {
     this.tagList = this.tags.map(tag => tag.name);
   }
 
-  updatePage($event: any) {
+  updatePage($event: { pageSize: number, pageIndex: number }) {
     this.pageIndex = $event.pageIndex;
     this.pageSize = $event.pageSize;
   }

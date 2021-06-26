@@ -14,7 +14,7 @@ import {combineLatest} from "rxjs";
 })
 export class AppComponent implements OnInit {
   showSpinner: boolean = true;
-  username: any;
+  username: string;
   list: Item[] = [];
   filteredList: Item[] = [];
   tags: Tag[] = [];

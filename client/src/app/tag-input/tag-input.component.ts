@@ -82,8 +82,7 @@ export class TagInputComponent implements OnInit, AfterViewInit, OnDestroy {
     this.add({value: $event.option.value, input: {value: ""}} as MatChipInputEvent);
   }
 
-  remove(tag: any): void {
-    console.log("remove");
+  remove(tag: string): void {
     const index = this.allTags.indexOf(tag);
 
     if (index >= 0) {

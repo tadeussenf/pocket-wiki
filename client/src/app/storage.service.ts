@@ -74,4 +74,81 @@ export class StorageService {
   removePocketConfig() {
     localStorage.removeItem("pocket-config");
   }
+
+  importData(forceUpdate: boolean, list: Item[], tags: string[]) {
+    // get item per tag count
+    const tagsWithCount: Tag[] = tags.map(tag => ({
+      name: tag,
+      count: list.filter(item => item.customTags.includes(tag)).length
+    }));
+
+    let tagsToSort: Tag[];
+    let listToSort: Item[];
+    if (!forceUpdate) {
+      console.log("merging partial data");
+      this.mergePartialData(list, tagsWithCount);
+      tagsToSort = this.tags;
+      listToSort = this.list;
+    } else {
+      tagsToSort = tagsWithCount;
+      listToSort = list;
+    }
+
+    this.tags = tagsToSort.sort((a, b) => b.count - a.count);
+    this.list = listToSort.sort((a, b) => parseInt(b.time_added) - parseInt(a.time_added));
+    this.filteredList = this.list;
+  }
+
+  private mergePartialData(inputList: Item[], inputTags: Tag[]) {
+    console.log("merging items", inputList);
+    inputList.forEach((item) => {
+      const index = this.list.findIndex(existing => existing.item_id === item.item_id);
+
+      if (parseInt(item.status) === 2) {
+        if (this.list[index] && this.list[index].item_id === item.item_id) {
+          this.deleteItemFromLocalDataCopy(item.item_id);
+        } else {
+          console.warn("unknown error case when deleting item with index", index, this.list[index]);
+        }
+      } else if (index >= 0) {
+        this.list[index] = item;
+      } else {
+        this.list.push(item)
+      }
+    });
+
+    inputTags.forEach((tag) => {
+      const index = this.tags.findIndex(existing => existing.name === tag.name);
+      if (index >= 0) {
+        this.tags[index] = {
+          name: tag.name,
+          count: this.list.filter(item => item.customTags.includes(tag.name)).length
+        }
+      } else {
+        this.tags.push({
+          name: tag.name,
+          count: this.list.filter(item => item.customTags.includes(tag.name)).length
+        });
+      }
+    });
+  }
+
+  deleteItemFromLocalDataCopy(itemId: string) {
+    const index = this.list.findIndex(existing => existing.item_id === itemId);
+    console.log("deleting item with index", index, this.list[index]);
+
+    this.list[index].customTags.forEach((tagName) => {
+      const tag = this.tags.find(tag => tag.name === tagName);
+      const index = this.tags.findIndex(tag => tag.name === tagName);
+      if (tag.count === 1) {
+        this.tags.splice(index, 1);
+      } else {
+        this.tags[index].count = tag.count - 1;
+      }
+    });
+
+    this.list.splice(index, 1);
+  }
+
+
 }

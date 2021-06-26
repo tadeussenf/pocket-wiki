@@ -53,7 +53,7 @@ export class PocketService {
     }]);
 
     // todo add tags to local copy
-    this.deleteItemFromLocalDataCopy(itemId);
+    this.storage.deleteItemFromLocalDataCopy(itemId);
   }
 
   async archiveItem(itemId: string) {
@@ -64,7 +64,7 @@ export class PocketService {
       }]
     )
     // todo add tags to local copy
-    this.deleteItemFromLocalDataCopy(itemId);
+    this.storage.deleteItemFromLocalDataCopy(itemId);
   }
 
   async authenticateWithPocket() {
@@ -102,7 +102,8 @@ export class PocketService {
 
     this.config.lastUpdateTime = res.since;
     this.storage.setPocketConfig(this.config)
-    this.extractDataFromReponse(res.list, forceUpdate);
+    const extracted = this.extractDataFromReponse(res.list);
+    this.storage.importData(forceUpdate, extracted.list, extracted.tags)
     console.log("refreshed data");
   }
 
@@ -116,76 +117,18 @@ export class PocketService {
     return await this.httpClient.post(this.config.apiUrl + "v3/send", body).pipe(take(1)).toPromise()
   }
 
-  private extractDataFromReponse(input: { [key: string]: PocketItem }, forceUpdate: boolean) {
+  private extractDataFromReponse(input: { [key: string]: PocketItem }): { list: Item[]; tags: string[] } {
     // get tag list from all items
     this.msg.send("Extracting metadata");
     console.log("Extracting metadata", input);
 
-    const extracted = this.convertToItemsAndTags(input);
-    const list: Item[] = extracted.list;
-    const tags: string[] = extracted.tags;
-
-    // get item per tag count
-    const tagsWithCount: Tag[] = tags.map(tag => ({
-      name: tag,
-      count: list.filter(item => item.customTags.includes(tag)).length
-    }));
-
-    let tagsToSort: Tag[];
-    let listToSort: Item[];
-    if (!forceUpdate) {
-      console.log("merging partial data");
-      this.mergePartialData(list, tagsWithCount);
-      tagsToSort = this.storage.tags;
-      listToSort = this.storage.list;
-    } else {
-      tagsToSort = tagsWithCount;
-      listToSort = list;
-    }
-
-    this.storage.tags = tagsToSort.sort((a, b) => b.count - a.count);
-    this.storage.list = listToSort.sort((a, b) => parseInt(b.time_added) - parseInt(a.time_added));
-    this.storage.filteredList = this.storage.list;
-  }
-
-  private mergePartialData(inputList: Item[], inputTags: Tag[]) {
-    console.log("merging items", inputList);
-    inputList.forEach((item) => {
-      const index = this.storage.list.findIndex(existing => existing.item_id === item.item_id);
-
-      if (parseInt(item.status) === 2) {
-        if (this.storage.list[index] && this.storage.list[index].item_id === item.item_id) {
-          this.deleteItemFromLocalDataCopy(item.item_id);
-        } else {
-          console.warn("unknown error case when deleting item with index", index, this.storage.list[index]);
-        }
-      } else if (index >= 0) {
-        this.storage.list[index] = item;
-      } else {
-        this.storage.list.push(item)
-      }
-    });
-
-    inputTags.forEach((tag) => {
-      const index = this.storage.tags.findIndex(existing => existing.name === tag.name);
-      if (index >= 0) {
-        this.storage.tags[index] = {
-          name: tag.name,
-          count: this.storage.list.filter(item => item.customTags.includes(tag.name)).length
-        }
-      } else {
-        this.storage.tags.push({
-          name: tag.name,
-          count: this.storage.list.filter(item => item.customTags.includes(tag.name)).length
-        });
-      }
-    });
+    return this.convertToItemsAndTags(input);
   }
 
   // remove not needed properties form pocket items for storage reasons and get list of all tags
-  convertToItemsAndTags(input: { [key: string]: PocketItem }) {
+  convertToItemsAndTags(input: { [key: string]: PocketItem }): { list: Item[]; tags: string[] } {
     const list: Item[] = [];
-    const tags = [];
+    const tags: string[] = [];
 
     for (const pocketItem in input) {
       const item = new Item(
@@ -208,25 +151,8 @@ export class PocketService {
 
       list.push(item);
     }
-
+    console.log(tags);
     return {list: list, tags: tags};
-  }
-
-  private deleteItemFromLocalDataCopy(itemId: string) {
-    const index = this.storage.list.findIndex(existing => existing.item_id === itemId);
-    console.log("deleting item with index", index, this.storage.list[index]);
-
-    this.storage.list[index].customTags.forEach((tagName) => {
-      const tag = this.storage.tags.find(tag => tag.name === tagName);
-      const index = this.storage.tags.findIndex(tag => tag.name === tagName);
-      if (tag.count === 1) {
-        this.storage.tags.splice(index, 1);
-      } else {
-        this.storage.tags[index].count = tag.count - 1;
-      }
-    });
-
-    this.storage.list.splice(index, 1);
   }
 
   private async getAccessToken() {
