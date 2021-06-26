@@ -37,7 +37,13 @@ export class StorageService {
   }
 
   set list(value: Item[]) {
-    this._list = value;
+    console.log("set list");
+    this.setList(value);
+  }
+
+  setList(list: Item[]) {
+    console.log("setList()");
+    this._list = list;
     this.item$.next(this._list);
     localStorage.setItem("pocket-list", JSON.stringify(this._list));
   }
@@ -47,7 +53,11 @@ export class StorageService {
   }
 
   set tags(value: Tag[]) {
-    this._tags = value;
+    this.setTags(value);
+  }
+
+  setTags(tags: Tag[]) {
+    this._tags = tags;
     this.tag$.next(this._tags);
     localStorage.setItem("pocket-tags", JSON.stringify(this._tags));
   }
@@ -148,5 +158,6 @@ export class StorageService {
     });
 
     this.list.splice(index, 1);
+    this.setList(this.list);
   }
 }
