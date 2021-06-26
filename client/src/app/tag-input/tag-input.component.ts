@@ -9,11 +9,12 @@ import {
   Output,
   ViewChild
 } from "@angular/core";
-import { MatChipInputEvent, MatChipList } from "@angular/material/chips";
+import {MatChipInputEvent, MatChipList} from "@angular/material/chips";
 import {FormControl} from "@angular/forms";
 import {COMMA, SPACE} from "@angular/cdk/keycodes";
 import {Subscription} from "rxjs";
 import {StateService} from "../state.service";
+import {debounceTime} from "rxjs/operators";
 
 @Component({
   selector: "app-tag-input",
@@ -46,7 +47,7 @@ export class TagInputComponent implements OnInit, AfterViewInit, OnDestroy {
     this.filteredTags = [];
 
     this.tagInputSub = this.tagInput.valueChanges
-      .debounceTime(300)
+      .pipe(debounceTime(300))
       .subscribe(value => {
         this.filteredTags = this.allTags.filter(item => item.startsWith(value.toLowerCase()));
       });

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {PocketItem, Tag} from "../common/interfaces";
+import {Tag} from "../common/interfaces";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../environments/environment";
 import * as _ from "lodash";
@@ -210,10 +210,6 @@ export class PocketService {
         this.lastUpdateTime = res.since;
         localStorage.setItem("pocket-lastUpdateTime", JSON.stringify(this.lastUpdateTime));
         // extract and count tags
-        if (!forceUpdate && res.list.length === 0) {
-          // no new data
-          return
-        }
         this.extractDataFromReponse(res.list, forceUpdate);
         console.log("loading all data done");
       })
@@ -228,9 +224,10 @@ export class PocketService {
     const tags: string[] = transfer.tags;
 
     // get item per tag count
-    const tagsWithCount: Tag[] = tags.map((tag: string) => {
-      return {name: tag, count: _.filter(list, item => item.customTags.includes(tag)).length}
-    });
+    const tagsWithCount: Tag[] = tags.map(tag => ({
+      name: tag,
+      count: list.filter(item => item.customTags.includes(tag)).length
+    }));
 
     if (!forceUpdate) {
       console.log("merging partial data");
@@ -240,15 +237,15 @@ export class PocketService {
       this.storage.list = list;
     }
 
-    this.storage.tags = _.orderBy(this.storage.tags, ["count"], ["desc"]);
-    this.storage.list = _.orderBy(this.storage.list, ["time_added"], ["desc"]);
+    this.storage.tags = this.storage.tags.sort((a, b) => b.count - a.count);
+    this.storage.list = this.storage.list.sort((a, b) => parseInt(b.time_added) - parseInt(a.time_added));
     this.storage.filteredList = this.storage.list;
   }
 
   private mergePartialData(inputList: Item[], inputTags: Tag[]) {
     console.log("merging items", inputList);
     inputList.forEach((item) => {
-      const index = _.findIndex(this.storage.list, existing => existing.item_id === item.item_id);
+      const index = this.storage.list.findIndex(existing => existing.item_id === item.item_id);
 
       if (parseInt(item.status) === 2) {
         if (this.storage.list[index] && this.storage.list[index].item_id === item.item_id) {
@@ -264,16 +261,16 @@ export class PocketService {
     });
 
     inputTags.forEach((tag) => {
-      const index = _.findIndex(this.storage.tags, existing => existing.name === tag.name);
+      const index = this.storage.tags.findIndex(existing => existing.name === tag.name);
       if (index >= 0) {
         this.storage.tags[index] = {
           name: tag.name,
-          count: _.filter(this.storage.list, item => item.customTags.includes(tag.name)).length
+          count: this.storage.list.filter(item => item.customTags.includes(tag.name)).length
         }
       } else {
         this.storage.tags.push({
           name: tag.name,
-          count: _.filter(this.storage.list, item => item.customTags.includes(tag.name)).length
+          count: this.storage.list.filter(item => item.customTags.includes(tag.name)).length
         });
       }
     });
@@ -310,12 +307,12 @@ export class PocketService {
   }
 
   private deleteItemFromLocalDataCopy(itemId: string) {
-    const index = _.findIndex(this.storage.list, existing => existing.item_id === itemId);
+    const index = this.storage.list.findIndex(existing => existing.item_id === itemId);
     console.log("deleting item with index", index, this.storage.list[index]);
 
     this.storage.list[index].customTags.forEach((tagName) => {
-      const tag = _.find(this.storage.tags, tag => tag.name === tagName);
-      const index = _.findIndex(this.storage.tags, tag);
+      const tag = this.storage.tags.find(tag => tag.name === tagName);
+      const index = this.storage.tags.findIndex(tag => tag.name === tagName);
       if (tag.count === 1) {
         this.storage.tags.splice(index, 1);
       } else {

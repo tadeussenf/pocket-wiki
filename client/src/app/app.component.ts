@@ -1,11 +1,10 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {PocketItem, Tag} from "common/interfaces";
+import {Tag} from "common/interfaces";
 import {StateService} from "./state.service";
-import "rxjs/add/operator/debounceTime";
-import "rxjs/add/observable/combineLatest";
-import {Observable} from "rxjs";
 import {NotificationService} from "./notification.service";
 import {Item} from "../common/Item";
+import {debounceTime} from "rxjs/operators";
+import {combineLatest} from "rxjs";
 
 @Component({
   selector: 'app-root',
@@ -33,8 +32,8 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    Observable.combineLatest(this.state.allItems$, this.state.filteredItems$, this.state.tag$)
-      .debounceTime(50)
+    combineLatest([this.state.allItems$, this.state.filteredItems$, this.state.tag$])
+      .pipe(debounceTime(50))
       .subscribe(([allItems, filteredItems, tags]) => {
         this.list = allItems;
         this.filteredList = filteredItems;

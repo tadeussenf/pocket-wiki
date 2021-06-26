@@ -1,5 +1,4 @@
 import {Injectable} from "@angular/core";
-import * as _ from "lodash";
 import {Item} from "../common/Item";
 import {PocketService} from "./pocket.service";
 import {combineLatest, ReplaySubject} from "rxjs";
@@ -23,10 +22,10 @@ export class StateService {
     private msg: NotificationService
   ) {
 
-    combineLatest(
+    combineLatest([
       this.storage.getItem$(),
       this.storage.getTag$()
-    ).subscribe(([items, tags]) => {
+    ]).subscribe(([items, tags]) => {
         this.allItems = items;
         this.tags = tags;
 
@@ -43,9 +42,10 @@ export class StateService {
   }
 
   deleteItem(itemId: string) {
-    if (!window.confirm('Are you sure?'))
+    if (!window.confirm('Are you sure?')) {
       return;
-    
+    }
+
     this.pocket.deleteItem(itemId)
   }
 
@@ -55,11 +55,9 @@ export class StateService {
 
   showItemsForTag(tag: string) {
     console.log("showItemsForTag", tag);
-    this.filteredItems = _.filter(this.allItems, (item: Item) => {
-      return item.customTags.includes(tag);
-    });
+    this.filteredItems = this.allItems.filter(item => item.customTags.includes(tag));
 
-    console.log("emit filteredList", this.filteredItems);
+    console.log("filteredList", this.filteredItems);
     this.filteredItems$.next(this.filteredItems);
   }
 
@@ -69,27 +67,19 @@ export class StateService {
       this.filteredItems = this.allItems;
     } else {
       const range = (Date.now() / 1000) - (days * 24 * 60 * 60);
-      this.filteredItems = _.filter(this.allItems, (item: Item) => {
-        return parseInt(item.time_added) > range;
-      })
+      this.filteredItems = this.allItems.filter(item => parseInt(item.time_added) > range)
     }
 
-    console.log("emit filteredList", this.filteredItems);
+    console.log("filteredList", this.filteredItems);
     this.filteredItems$.next(this.filteredItems);
   }
 
   filterNoTags() {
     console.log("filterNoTags");
-    this.filteredItems = _.filter(this.allItems, (item: Item) => {
-      return item.customTags.length === 0;
-    });
+    this.filteredItems = this.allItems.filter(item => item.customTags.length === 0);
 
-    console.log("emit filteredList", this.filteredItems);
+    console.log("filteredList", this.filteredItems);
     this.filteredItems$.next(this.filteredItems);
-  }
-
-  simpleDrop($event: Event) {
-    console.log($event);
   }
 
   resetFilter() {
