@@ -31,7 +31,9 @@ export class AppComponent implements OnInit {
     this.registerResponsiveHandlers()
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    await this.state.checkIsAuthenticated()
+
     combineLatest([this.state.allItems$, this.state.filteredItems$, this.state.tag$])
       .pipe(debounceTime(50))
       .subscribe(([allItems, filteredItems, tags]) => {
@@ -46,12 +48,11 @@ export class AppComponent implements OnInit {
       });
   }
 
-  public refreshData(forceUpdate: boolean) {
+  async refreshData(forceUpdate: boolean) {
     this.filteredList = [];
     this.tags = [];
     this.showSpinner = true;
-    this.state.loadAllItems(forceUpdate);
-
+    await this.state.loadAllItems(forceUpdate);
   }
 
   filterByTag(tag: string) {

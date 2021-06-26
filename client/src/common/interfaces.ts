@@ -63,3 +63,14 @@ export interface Tag {
   count: number
 }
 
+export interface PocketConfig {
+  username: string,
+  lastUpdateTime: number;
+  accessToken?: string;
+  requestToken?: string;
+  consumerKey: string;
+  apiUrl: string;
+  redirectUrl: string;
+  headers: {[key: string]: string}
+}
+

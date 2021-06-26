@@ -1,203 +1,95 @@
-import {Injectable} from '@angular/core';
-import {Tag} from "../common/interfaces";
+import {Injectable} from "@angular/core";
+import {PocketConfig, Tag} from "../common/interfaces";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../environments/environment";
-import * as _ from "lodash";
 import {NotificationService} from "./notification.service";
 import {StorageService} from "./storage.service";
 import {Item} from "../common/Item";
+import {take} from "rxjs/operators";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class PocketService {
-  // auth stuff
-  private accessToken: string;
-  private consumerKey = "71520-12304220fa8fcbd039b9be34";
-  private headers = {
-    "Content-Type": "application/json",
-    "X-Accept": "application/json"
-  };
-  private requestToken: string;
-
-  // data stuff
-  username: string;
-  lastUpdateTime: number;
+  private readonly config: PocketConfig;
 
   constructor(
     private httpClient: HttpClient,
     private storage: StorageService,
     private msg: NotificationService
   ) {
-    this.lastUpdateTime = parseInt(localStorage.getItem("pocket-lastUpdateTime"));
-    this.username = localStorage.getItem("pocket-username");
-    this.accessToken = localStorage.getItem("pocket-accessToken");
-
-    // not authenticated
-    if (!this.accessToken || !this.username) {
-      // todo delete data or inform user that pocket auth has been lost
-      this.authenticateWithPocket();
-      return;
-    }
-
-    if (!this.storage.list || this.storage.list.length === 0) {
-      this.loadAllItems(true);
-    } else {
-      this.loadAllItems(false);
-    }
+    this.config = this.storage.getPocketAuthData();
   }
 
-  addTags(itemId: string, tags: string[]) {
+  async addTags(itemId: string, tags: string[]) {
     // todo if new tag add to this.tags and recount items
     console.log("adding tags", tags.toString());
-    const body = {
-      "consumer_key": this.consumerKey,
-      "access_token": this.accessToken,
-      actions: [{
+    await this.httpSendPocketAction([{
         action: "tags_replace",
         item_id: itemId,
         tags: tags.toString(),
         time: Date.now() - 1000
       }]
-    };
-
-    this.httpClient.post(environment.pocketApiUrl + "v3/send", body)
-      .subscribe(
-        res => {
-          // todo add tags to local copy
-        },
-        err => {
-          console.error(err.json())
-        }
-      )
+    )
   }
 
-  removeTags(itemId: string, tags: string[]) {
+  async removeTags(itemId: string, tags: string[]) {
     // todo if new tag add to this.tags and recount items
-    console.log("removing tags", tags.toString());
-    const body = {
-      "consumer_key": this.consumerKey,
-      "access_token": this.accessToken,
-      actions: [{
+    await this.httpSendPocketAction([{
         action: "tags_remove",
         item_id: itemId,
         tags: tags.toString(),
         time: Date.now() - 1000
       }]
-    };
-
-    this.httpClient.post(environment.pocketApiUrl + "v3/send", body)
-      .subscribe(
-        res => {
-          // todo remove tags from local copy
-        },
-        err => {
-          console.error(err.json())
-        }
-      )
+    );
   }
 
 
-  deleteItem(itemId: string) {
-    const body = {
-      "consumer_key": this.consumerKey,
-      "access_token": this.accessToken,
-      actions: [{
-        action: "delete",
-        item_id: itemId,
-        time: Date.now() - 1000
-      }]
-    };
-    this.httpClient.post(environment.pocketApiUrl + "v3/send", body)
-      .subscribe(
-        res => {
-          // todo add tags to local copy
-          this.deleteItemFromLocalDataCopy(itemId);
-        },
-        err => {
-          console.error(err.json())
-        }
-      )
+  async deleteItem(itemId: string) {
+    await this.httpSendPocketAction([{
+      action: "delete",
+      item_id: itemId,
+      time: Date.now() - 1000
+    }]);
+
+    // todo add tags to local copy
+    this.deleteItemFromLocalDataCopy(itemId);
   }
 
-  archiveItem(itemId: string) {
-    const body = {
-      "consumer_key": this.consumerKey,
-      "access_token": this.accessToken,
-      actions: [{
+  async archiveItem(itemId: string) {
+    await this.httpSendPocketAction([{
         action: "archive",
         item_id: itemId,
         time: Date.now() - 1000
       }]
-    };
-    this.httpClient.post(environment.pocketApiUrl + "v3/send", body)
-      .subscribe(
-        res => {
-          // todo add tags to local copy
-          this.deleteItemFromLocalDataCopy(itemId);
-        },
-        err => {
-          console.error(err.json())
-        }
-      )
+    )
+    // todo add tags to local copy
+    this.deleteItemFromLocalDataCopy(itemId);
   }
 
-  private authenticateWithPocket() {
-    console.log("not authenticated");
-    this.requestToken = localStorage.getItem("pocket-requestToken");
-
-    // recieved pocket auth callback
-    if (this.requestToken) {
-      // todo: getAccessToken()
-      this.msg.send("Authenticating with pocket");
-
-      this.httpClient.post<any>(environment.pocketApiUrl + "v3/oauth/authorize", {
-        "consumer_key": this.consumerKey,
-        "code": this.requestToken
-      }, {headers: this.headers}).subscribe(
-        (res) => {
-          this.username = res.username;
-          this.accessToken = res.access_token;
-          localStorage.setItem("pocket-accessToken", this.accessToken);
-          localStorage.setItem("pocket-username", this.username);
-          this.loadAllItems(true);
-        },
-        (err) => {
-          console.log("error while authorizing");
-          localStorage.removeItem("pocket-requestToken")
-        }
-      )
+  async authenticateWithPocket() {
+    if (this.config.requestToken) {
+      // received pocket auth callback
+      await this.getAccessToken()
     } else {
-      // todo: getRequestToken()
-      this.msg.send("Connecting to pocket");
-      this.httpClient.post(environment.pocketApiUrl + "v3/oauth/request", {
-        "consumer_key": this.consumerKey,
-        "redirect_uri": environment.redirectUrl
-      }).subscribe((res: any) => {
-          if (!res.access_token) {
-            this.requestToken = res.code;
-            localStorage.setItem("pocket-requestToken", this.requestToken);
-            console.log("requestToken", this.requestToken);
-
-            location.href = "https://getpocket.com/auth/authorize?request_token=" + this.requestToken + "&redirect_uri=" + environment.redirectUrl
-          }
-        },
-        (err) => {
-          console.log("err", err);
-        })
+      await this.getRequestToken()
     }
   }
 
-  public loadAllItems(forceUpdate: boolean) {
-    this.msg.send("Fetching all items from pocket");
+  async loadAllItems(forceUpdate: boolean) {
+    if (forceUpdate) {
+      this.msg.send("Fetching all items from pocket");
+    } else {
+      this.msg.send("Fetching latest items from pocket");
+    }
     console.log("loading data, force:", forceUpdate);
 
     const body = {
-      "consumer_key": this.consumerKey,
-      "access_token": this.accessToken,
+      "consumer_key": this.config.consumerKey,
+      "access_token": this.config.accessToken,
       "detailType": "complete",
       "state": "all",
-      "since": this.lastUpdateTime
+      "since": this.config.lastUpdateTime
       // "count": 10
     };
 
@@ -205,23 +97,31 @@ export class PocketService {
       delete body.since;
     }
 
-    this.httpClient.post<any>(environment.pocketApiUrl + "v3/get", body, {headers: this.headers})
-      .subscribe((res) => {
-        this.lastUpdateTime = res.since;
-        localStorage.setItem("pocket-lastUpdateTime", JSON.stringify(this.lastUpdateTime));
-        // extract and count tags
-        this.extractDataFromReponse(res.list, forceUpdate);
-        console.log("loading all data done");
-      })
+    const res = await this.httpClient.post<any>(this.config.apiUrl + "v3/get", body, {headers: this.config.headers}).pipe(take(1)).toPromise()
+
+    this.config.lastUpdateTime = res.since;
+    this.storage.setPocketConfig(this.config)
+    this.extractDataFromReponse(res.list, forceUpdate);
+    console.log("refreshed data");
+  }
+
+  private async httpSendPocketAction(actions: any[]) {
+    const body = {
+      "consumer_key": this.config.consumerKey,
+      "access_token": this.config.accessToken,
+      actions: actions
+    };
+
+    return await this.httpClient.post(this.config.apiUrl + "v3/send", body).pipe(take(1)).toPromise()
   }
 
   private extractDataFromReponse(input: any, forceUpdate: boolean) {
     // get tag list from all items
     this.msg.send("Extracting metadata");
 
-    const transfer = this.convertToItem(input);
-    const list: Item[] = transfer.list;
-    const tags: string[] = transfer.tags;
+    const extracted = this.convertToItem(input);
+    const list: Item[] = extracted.list;
+    const tags: string[] = extracted.tags;
 
     // get item per tag count
     const tagsWithCount: Tag[] = tags.map(tag => ({
@@ -321,5 +221,48 @@ export class PocketService {
     });
 
     this.storage.list.splice(index, 1);
+  }
+
+  private async getAccessToken() {
+    try {
+      this.msg.send("Authenticating with pocket");
+
+      const res = await this.httpClient.post<any>(this.config.apiUrl + "v3/oauth/authorize", {
+        "consumer_key": this.config.consumerKey,
+        "code": this.config.requestToken
+      }, {headers: this.config.headers}).pipe(take(1)).toPromise()
+
+      this.config.username = res.username;
+      this.config.accessToken = res.access_token;
+      this.storage.setPocketConfig(this.config);
+      await this.loadAllItems(true);
+    } catch (err) {
+      console.log("error while authorizing", err);
+      this.storage.removePocketConfig();
+    }
+  }
+
+  private async getRequestToken() {
+    try {
+      this.msg.send("Connecting to pocket");
+
+      const res: any = await this.httpClient.post(environment.pocketApiUrl + "v3/oauth/request", {
+        "consumer_key": this.config.consumerKey,
+        "redirect_uri": this.config.redirectUrl
+      }).pipe(take(1)).toPromise();
+
+      if (!res.access_token) {
+        this.config.requestToken = res.code;
+        this.storage.setPocketConfig(this.config);
+
+        location.href = `https://getpocket.com/auth/authorize?request_token=${this.config.requestToken}&redirect_uri=${this.config.redirectUrl}`
+      }
+    } catch (err) {
+      console.log("err", err);
+    }
+  }
+
+  isAuthenticated(): boolean {
+    return !!this.config.accessToken || !!this.config.username;
   }
 }

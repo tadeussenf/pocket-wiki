@@ -2,7 +2,6 @@ import {Injectable} from "@angular/core";
 import {Item} from "../common/Item";
 import {PocketService} from "./pocket.service";
 import {combineLatest, ReplaySubject} from "rxjs";
-import {NotificationService} from "./notification.service";
 import {StorageService} from "./storage.service";
 import {Tag} from "../common/interfaces";
 
@@ -15,24 +14,28 @@ export class StateService {
   allItems$ = new ReplaySubject<Item[]>(1);
   filteredItems$ = new ReplaySubject<Item[]>(1);
   tag$ = new ReplaySubject<Tag[]>(1);
+  private isFirstRun = true;
 
   constructor(
     private pocket: PocketService,
     private storage: StorageService,
-    private msg: NotificationService
   ) {
-
     combineLatest([
       this.storage.getItem$(),
       this.storage.getTag$()
-    ]).subscribe(([items, tags]) => {
+    ]).subscribe(async ([items, tags]) => {
         this.allItems = items;
         this.tags = tags;
 
-        this.allItems$.next(this.allItems);
-        this.filteredItems$.next(this.allItems);
-        this.tag$.next(this.tags);
-        this.filteredItems = this.allItems;
+        if (this.isFirstRun) {
+          this.isFirstRun = false;
+          await this.loadAllItems(!this.allItems || this.allItems.length === 0)
+        } else {
+          this.allItems$.next(this.allItems);
+          this.filteredItems$.next(this.allItems);
+          this.tag$.next(this.tags);
+          this.filteredItems = this.allItems;
+        }
       }
     );
   }
@@ -87,7 +90,13 @@ export class StateService {
     this.filteredItems$.next(this.allItems);
   }
 
-  loadAllItems(forceUpdate: boolean) {
-    this.pocket.loadAllItems(forceUpdate);
+  async loadAllItems(forceUpdate: boolean) {
+    await this.pocket.loadAllItems(forceUpdate);
+  }
+
+  async checkIsAuthenticated() {
+    if (!this.pocket.isAuthenticated()) {
+      await this.pocket.authenticateWithPocket();
+    }
   }
 }
