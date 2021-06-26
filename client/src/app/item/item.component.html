@@ -1,6 +1,4 @@
-<mat-list-item
-        class="item"
->
+<mat-list-item class="item" [class.odd]="isOdd" [class.even]="isEven">
     <div matLine class="item-header">
         <a class="title" href="{{item.given_url}}" target="_blank">
             <ng-container *ngIf="item.given_title">{{item.given_title}}&nbsp;</ng-container>

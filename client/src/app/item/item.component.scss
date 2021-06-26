@@ -1,0 +1,44 @@
+.item {
+  &.odd {
+    background-color: #f1f1f1;
+  }
+
+  &.even {
+    //background-color: #f1f1f1;
+  }
+
+  p {
+    margin-top: 0;
+    margin-bottom: 4px;
+    white-space: inherit;
+  }
+
+  .url {
+  }
+
+  .excerpt {
+    p {
+      white-space: normal;
+    }
+
+    i {
+      font-size: 13px;
+    }
+  }
+
+  .item-header {
+    display: flex;
+    align-items: baseline;
+
+    a {
+      flex-grow: 8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    small {
+      display: flex;
+    }
+  }
+}

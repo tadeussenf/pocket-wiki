@@ -1,11 +1,11 @@
 <!--todo odd even background-->
 <mat-list class="item-list">
-    <app-item class="item"
-              *ngFor="let item of filteredList | slice:pageIndex*pageSize:pageIndex*pageSize+pageSize; let isOdd=odd; let isEven=even"
-              [class.odd]="isOdd"
-              [class.even]="isEven"
-              [item]="item"
-              [tagList]="tagList"
+    <app-item
+            *ngFor="let item of filteredList | slice:pageIndex*pageSize:pageIndex*pageSize+pageSize; let isOdd=odd; let isEven=even"
+            [isOdd]="isOdd"
+            [isEven]="isEven"
+            [item]="item"
+            [tagList]="tagList"
     ></app-item>
 </mat-list>
 

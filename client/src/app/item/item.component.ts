@@ -10,6 +10,8 @@ import {StateService} from "../state.service";
 export class ItemComponent implements OnInit {
   @Input() item: Item;
   @Input() tagList: string[];
+  @Input() isOdd: boolean;
+  @Input() isEven: boolean;
 
   constructor(
     public state: StateService
