@@ -1,0 +1,42 @@
+<mat-list-item
+        class="item"
+>
+    <div matLine class="item-header">
+        <a class="title" href="{{item.given_url}}" target="_blank">
+            <ng-container *ngIf="item.given_title">{{item.given_title}}&nbsp;</ng-container>
+            <ng-container *ngIf="item.resolved_title">{{item.resolved_title}}&nbsp;</ng-container>
+        </a>
+        <small class="date-added" *ngIf="item.time_added"><i>{{item.time_added + '000' | date}}</i></small>
+        <small class="date-added" *ngIf="!item.time_added"><i style="font-style: bold; color: red;">ERROR</i></small>
+    </div>
+
+    <a matLine class="url" href="{{item.given_url}}" target="_blank">
+        <small><p>{{item.given_url}}</p></small>
+    </a>
+
+    <i matLine class="excerpt">
+        <p>{{item.excerpt}} </p>
+    </i>
+
+    <app-tag-input
+            matLine
+            [allTags]="tagList"
+            [itemTags]="item.customTags"
+            [inline]="true"
+            (updatedTags)="addTags(item.item_id, $event)"
+    >
+    </app-tag-input>
+
+    <div matLine>
+        <button mat-button (click)="state.archiveItem(item.item_id)">
+            <mat-icon>archive</mat-icon>
+            Archive
+        </button>
+
+        <button mat-button (click)="state.deleteItem(item.item_id)">
+            <mat-icon>delete</mat-icon>
+            Delete
+        </button>
+    </div>
+
+</mat-list-item>

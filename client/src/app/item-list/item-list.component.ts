@@ -17,7 +17,7 @@ export class ItemListComponent implements OnInit {
   pageSize = 25;
 
   constructor(
-    public pocket: StateService
+    public state: StateService
   ) {
   }
 
@@ -31,10 +31,6 @@ export class ItemListComponent implements OnInit {
   }
 
   filterByTag(tag: string) {
-    this.pocket.showItemsForTag(tag);
-  }
-
-  addTags(item_id: string, tags: string[]) {
-    this.pocket.addTags(item_id, tags);
+    this.state.showItemsForTag(tag);
   }
 }

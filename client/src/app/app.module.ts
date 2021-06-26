@@ -28,6 +28,7 @@ import {HttpClientModule} from "@angular/common/http";
 import {TagInputComponent} from "./tag-input/tag-input.component";
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { ItemComponent } from './item/item.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { environment } from '../environments/environment';
     ItemListComponent,
     SearchBarComponent,
     SearchResultListComponent,
-    TagInputComponent
+    TagInputComponent,
+    ItemComponent
   ],
   imports: [
     BrowserModule,

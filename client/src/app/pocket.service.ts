@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {PocketAuthorizeResponse, PocketConfig, PocketItem, PocketItemResponse, Tag} from "../common/interfaces";
+import {PocketAuthorizeResponse, PocketConfig, PocketItem, PocketItemResponse} from "../common/interfaces";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../environments/environment";
 import {NotificationService} from "./notification.service";
@@ -22,8 +22,6 @@ export class PocketService {
   }
 
   async addTags(itemId: string, tags: string[]) {
-    // todo if new tag add to this.tags and recount items
-    console.log("adding tags", tags.toString());
     await this.httpSendPocketAction([{
         action: "tags_replace",
         item_id: itemId,

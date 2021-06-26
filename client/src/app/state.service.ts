@@ -40,8 +40,9 @@ export class StateService {
     );
   }
 
-  addTags(itemId: string, tags: string[]) {
-    this.pocket.addTags(itemId, tags);
+  async addTags(itemId: string, tags: string[]) {
+    // todo update local state
+    await this.pocket.addTags(itemId, tags);
   }
 
   async deleteItem(itemId: string) {
