@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {PocketConfig, Tag} from "../common/interfaces";
+import {PocketConfig, PocketItem, Tag} from "../common/interfaces";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../environments/environment";
 import {NotificationService} from "./notification.service";
@@ -115,11 +115,12 @@ export class PocketService {
     return await this.httpClient.post(this.config.apiUrl + "v3/send", body).pipe(take(1)).toPromise()
   }
 
-  private extractDataFromReponse(input: any, forceUpdate: boolean) {
+  private extractDataFromReponse(input: { [key: string]: PocketItem }, forceUpdate: boolean) {
     // get tag list from all items
     this.msg.send("Extracting metadata");
+    console.log("Extracting metadata", input);
 
-    const extracted = this.convertToItem(input);
+    const extracted = this.convertToItemsAndTags(input);
     const list: Item[] = extracted.list;
     const tags: string[] = extracted.tags;
 
@@ -129,16 +130,20 @@ export class PocketService {
       count: list.filter(item => item.customTags.includes(tag)).length
     }));
 
+    let tagsToSort: Tag[];
+    let listToSort: Item[];
     if (!forceUpdate) {
       console.log("merging partial data");
       this.mergePartialData(list, tagsWithCount);
+      tagsToSort = this.storage.tags;
+      listToSort = this.storage.list;
     } else {
-      this.storage.tags = tagsWithCount;
-      this.storage.list = list;
+      tagsToSort = tagsWithCount;
+      listToSort = list;
     }
 
-    this.storage.tags = this.storage.tags.sort((a, b) => b.count - a.count);
-    this.storage.list = this.storage.list.sort((a, b) => parseInt(b.time_added) - parseInt(a.time_added));
+    this.storage.tags = tagsToSort.sort((a, b) => b.count - a.count);
+    this.storage.list = listToSort.sort((a, b) => parseInt(b.time_added) - parseInt(a.time_added));
     this.storage.filteredList = this.storage.list;
   }
 
@@ -177,7 +182,7 @@ export class PocketService {
   }
 
   // remove not needed properties form pocket items for storage reasons and get list of all tags
-  convertToItem(input: any) {
+  convertToItemsAndTags(input: { [key: string]: PocketItem }) {
     const list: Item[] = [];
     const tags = [];
 

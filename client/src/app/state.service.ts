@@ -1,13 +1,13 @@
 import {Injectable} from "@angular/core";
 import {Item} from "../common/Item";
 import {PocketService} from "./pocket.service";
-import {combineLatest, ReplaySubject} from "rxjs";
+import {ReplaySubject, zip} from "rxjs";
 import {StorageService} from "./storage.service";
 import {Tag} from "../common/interfaces";
 
 @Injectable()
 export class StateService {
-  private allItems: Item[];
+  private list: Item[];
   private tags: Tag[];
   private filteredItems: Item[];
 
@@ -20,21 +20,21 @@ export class StateService {
     private pocket: PocketService,
     private storage: StorageService,
   ) {
-    combineLatest([
+    console.log("init");
+    zip(
       this.storage.getItem$(),
       this.storage.getTag$()
-    ]).subscribe(async ([items, tags]) => {
-        this.allItems = items;
+    ).subscribe(async ([items, tags]) => {
+        this.list = items;
         this.tags = tags;
 
         if (this.isFirstRun) {
           this.isFirstRun = false;
-          await this.loadAllItems(!this.allItems || this.allItems.length === 0)
+          await this.loadAllItems(!this.list || this.list.length === 0)
         } else {
-          this.allItems$.next(this.allItems);
-          this.filteredItems$.next(this.allItems);
+          this.allItems$.next(this.list);
           this.tag$.next(this.tags);
-          this.filteredItems = this.allItems;
+          this.filterNotArchived(); // default
         }
       }
     );
@@ -44,21 +44,21 @@ export class StateService {
     this.pocket.addTags(itemId, tags);
   }
 
-  deleteItem(itemId: string) {
+  async deleteItem(itemId: string) {
     if (!window.confirm('Are you sure?')) {
       return;
     }
 
-    this.pocket.deleteItem(itemId)
+    await this.pocket.deleteItem(itemId)
   }
 
-  archiveItem(itemId: string) {
-    this.pocket.archiveItem(itemId)
+  async archiveItem(itemId: string) {
+    await this.pocket.archiveItem(itemId)
   }
 
   showItemsForTag(tag: string) {
     console.log("showItemsForTag", tag);
-    this.filteredItems = this.allItems.filter(item => item.customTags.includes(tag));
+    this.filteredItems = this.list.filter(item => item.customTags.includes(tag));
 
     console.log("filteredList", this.filteredItems);
     this.filteredItems$.next(this.filteredItems);
@@ -67,27 +67,41 @@ export class StateService {
   filterByDate(days: number) {
     console.log("filterByDate", days);
     if (days === 0) {
-      this.filteredItems = this.allItems;
+      this.filteredItems = this.list;
     } else {
       const range = (Date.now() / 1000) - (days * 24 * 60 * 60);
-      this.filteredItems = this.allItems.filter(item => parseInt(item.time_added) > range)
+      this.filteredItems = this.list.filter(item => parseInt(item.time_added) > range)
     }
 
     console.log("filteredList", this.filteredItems);
     this.filteredItems$.next(this.filteredItems);
   }
 
+  filterNotArchived() {
+    console.log("filterNotArchived");
+    this.filteredItems = this.list.filter(e => e.status === "0");
+    console.log("filteredList", this.filteredItems);
+    this.filteredItems$.next(this.filteredItems);
+  }
+
+  filterArchived() {
+    console.log("filterArchived");
+    this.filteredItems = this.list.filter(e => e.status === "1");
+    console.log("filteredList", this.filteredItems);
+    this.filteredItems$.next(this.filteredItems);
+  }
+
   filterNoTags() {
     console.log("filterNoTags");
-    this.filteredItems = this.allItems.filter(item => item.customTags.length === 0);
+    this.filteredItems = this.list.filter(item => item.customTags.length === 0);
 
     console.log("filteredList", this.filteredItems);
     this.filteredItems$.next(this.filteredItems);
   }
 
   resetFilter() {
-    this.filteredItems = this.allItems;
-    this.filteredItems$.next(this.allItems);
+    this.filteredItems = this.list;
+    this.filteredItems$.next(this.list);
   }
 
   async loadAllItems(forceUpdate: boolean) {

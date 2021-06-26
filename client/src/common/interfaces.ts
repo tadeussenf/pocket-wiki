@@ -21,7 +21,7 @@
   has_image: string;
   word_count: string;
   amp_url: string;
-  authors: any;
+  authors: any[];
   image: Image;
   images: Images;
 }

@@ -21,10 +21,7 @@ export class StorageService {
     private msg: NotificationService
   ) {
     this.tags = JSON.parse(localStorage.getItem("pocket-tags")) || [];
-    const rawList = JSON.parse(localStorage.getItem("pocket-list")) || [];
-    if (rawList) {
-      this.list = rawList.filter(e => e.status === "0");
-    }
+    this.list = JSON.parse(localStorage.getItem("pocket-list")) || [];
   }
 
   getItem$(): Observable<Item[]> {
