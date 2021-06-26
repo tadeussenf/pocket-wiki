@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {PocketConfig, PocketItem, Tag} from "../common/interfaces";
+import {PocketAuthorizeResponse, PocketConfig, PocketItem, PocketItemResponse, Tag} from "../common/interfaces";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../environments/environment";
 import {NotificationService} from "./notification.service";
@@ -89,6 +89,7 @@ export class PocketService {
       "access_token": this.config.accessToken,
       "detailType": "complete",
       "state": "all",
+      "sort": "newest",
       "since": this.config.lastUpdateTime
       // "count": 10
     };
@@ -97,7 +98,7 @@ export class PocketService {
       delete body.since;
     }
 
-    const res = await this.httpClient.post<any>(this.config.apiUrl + "v3/get", body, {headers: this.config.headers}).pipe(take(1)).toPromise()
+    const res = await this.httpClient.post<PocketItemResponse>(this.config.apiUrl + "v3/get", body, {headers: this.config.headers}).pipe(take(1)).toPromise()
 
     this.config.lastUpdateTime = res.since;
     this.storage.setPocketConfig(this.config)
@@ -232,7 +233,7 @@ export class PocketService {
     try {
       this.msg.send("Authenticating with pocket");
 
-      const res = await this.httpClient.post<any>(this.config.apiUrl + "v3/oauth/authorize", {
+      const res = await this.httpClient.post<PocketAuthorizeResponse>(this.config.apiUrl + "v3/oauth/authorize", {
         "consumer_key": this.config.consumerKey,
         "code": this.config.requestToken
       }, {headers: this.config.headers}).pipe(take(1)).toPromise()

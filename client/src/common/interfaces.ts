@@ -1,4 +1,18 @@
-﻿export interface PocketItem {
+﻿export interface PocketItemResponse {
+  since: number;
+  list: { [key: string]: PocketItem }
+}
+
+export interface PocketAuthorizeResponse {
+  username: string;
+  access_token: string
+}
+
+export interface PocketRequestResponse {
+  code: string;
+}
+
+export interface PocketItem {
   customTags: string[];
   item_id: string;
   status: string;
@@ -71,6 +85,6 @@ export interface PocketConfig {
   consumerKey: string;
   apiUrl: string;
   redirectUrl: string;
-  headers: {[key: string]: string}
+  headers: { [key: string]: string }
 }
 
