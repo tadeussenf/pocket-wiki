@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from "@angular/core";
 import {Item} from "../../common/Item";
 import {StateService} from "../state.service";
+import {Tag} from "../../common/interfaces";
 
 @Component({
   selector: "app-item",
@@ -9,9 +10,10 @@ import {StateService} from "../state.service";
 })
 export class ItemComponent implements OnInit {
   @Input() item: Item;
-  @Input() tagList: string[];
+  @Input() tags: Tag[];
   @Input() isOdd: boolean;
   @Input() isEven: boolean;
+  tagList: string[];
 
   constructor(
     public state: StateService
@@ -19,6 +21,7 @@ export class ItemComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.tagList = this.tags.map(tag => tag.name);
   }
 
   async addTags(item_id: string, tags: string[]) {

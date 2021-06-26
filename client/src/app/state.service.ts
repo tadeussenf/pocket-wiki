@@ -58,7 +58,7 @@ export class StateService {
     await this.pocket.archiveItem(itemId)
   }
 
-  showItemsForTag(tag: string) {
+  filterByTag(tag: string) {
     console.log("showItemsForTag", tag);
     this.filteredItems = this.list.filter(item => item.customTags.includes(tag));
 

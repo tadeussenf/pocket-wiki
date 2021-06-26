@@ -22,7 +22,7 @@ export class SidebarComponent implements OnInit {
   }
 
   onFilterByTag(tag: string) {
-    this.state.showItemsForTag(tag);
+    this.state.filterByTag(tag);
   }
 
   onResetFilter() {

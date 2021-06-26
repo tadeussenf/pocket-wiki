@@ -2,7 +2,7 @@
   <mat-form-field class="demo-chip-list">
     <mat-chip-list #chipList>
 
-      <mat-chip *ngFor="let tag of itemTags" [selectable]="true" [removable]="true" (removed)="remove(tag)">
+      <mat-chip *ngFor="let tag of itemTags" [selectable]="true" [removable]="true" (click)="filterByTag(tag)">
         {{tag}}
         <mat-icon matChipRemove *ngIf="true" (click)="remove(tag)">cancel</mat-icon>
       </mat-chip>
@@ -16,8 +16,8 @@
              [matAutocomplete]="auto"/>
 
       <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addFromAutocomplete($event)">
-        <mat-option *ngFor="let tag of filteredTags" [value]="tag">
-          {{ tag }}
+        <mat-option *ngFor="let tag of filteredTags" [value]="tag.name">
+          {{ tag.name }} ({{tag.count}})
         </mat-option>
       </mat-autocomplete>
 

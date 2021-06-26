@@ -22,7 +22,6 @@ export class ItemListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.tagList = this.tags.map(tag => tag.name);
   }
 
   updatePage($event: { pageSize: number, pageIndex: number }) {
@@ -31,6 +30,6 @@ export class ItemListComponent implements OnInit {
   }
 
   filterByTag(tag: string) {
-    this.state.showItemsForTag(tag);
+    this.state.filterByTag(tag);
   }
 }

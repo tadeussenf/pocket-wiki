@@ -56,7 +56,7 @@ export class AppComponent implements OnInit {
   }
 
   filterByTag(tag: string) {
-    this.state.showItemsForTag(tag);
+    this.state.filterByTag(tag);
   }
 
   resetFilter() {

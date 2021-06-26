@@ -11,10 +11,11 @@ import {
 } from "@angular/core";
 import {MatChipInputEvent, MatChipList} from "@angular/material/chips";
 import {FormControl} from "@angular/forms";
-import {COMMA, SPACE} from "@angular/cdk/keycodes";
+import {COMMA, ENTER, MAC_ENTER, SPACE} from "@angular/cdk/keycodes";
 import {Subscription} from "rxjs";
 import {StateService} from "../state.service";
 import {debounceTime} from "rxjs/operators";
+import {Tag} from "../../common/interfaces";
 
 @Component({
   selector: "app-tag-input",
@@ -22,7 +23,7 @@ import {debounceTime} from "rxjs/operators";
   styleUrls: ["./tag-input.component.scss"]
 })
 export class TagInputComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input() allTags: string[];
+  @Input() tags: Tag[];
   @Input() itemTags: string[];
   @Input() inline: boolean = false;
   @Output() updatedTags = new EventEmitter<string[]>();
@@ -32,8 +33,9 @@ export class TagInputComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("chipList") chipList: MatChipList;
 
   tagInput: FormControl = new FormControl();
-  separatorKeysCodes = [COMMA, SPACE];
-  filteredTags: string[];
+  separatorKeysCodes = [COMMA, SPACE, ENTER, MAC_ENTER];
+  filteredTags: Tag[];
+  private tagList: string[];
   private tagInputSub: Subscription;
 
   // we need to do some ugly stuff in order to get both chips and autocomplete working
@@ -45,12 +47,14 @@ export class TagInputComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.filteredTags = [];
+    this.tagList = this.tags.map(tag => tag.name);
+    this.filteredTags = this.tags;
 
     this.tagInputSub = this.tagInput.valueChanges
       .pipe(debounceTime(300))
       .subscribe(value => {
-        this.filteredTags = this.allTags.filter(item => item.startsWith(value.toLowerCase()));
+        console.log("filter");
+        this.filteredTags = this.tags.filter(item => item.name.toLowerCase().startsWith(value.toLowerCase())).slice(0, 10);
       });
   }
 
@@ -85,11 +89,6 @@ export class TagInputComponent implements OnInit, AfterViewInit, OnDestroy {
 
   remove(tag: string): void {
     this.removedTags.emit([tag])
-    const index = this.allTags.indexOf(tag);
-
-    if (index >= 0) {
-      this.allTags.splice(index, 1);
-    }
   }
 
   doSubmit() {
@@ -98,5 +97,9 @@ export class TagInputComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.tagInputSub.unsubscribe();
+  }
+
+  filterByTag(tag: string) {
+    this.state.filterByTag(tag);
   }
 }
