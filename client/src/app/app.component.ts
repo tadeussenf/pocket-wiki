@@ -83,7 +83,7 @@ export class AppComponent implements OnInit {
 
       if (item.given_title) {
         return item.given_title.toLowerCase().includes(searchTerm.toLowerCase());
-      } else {
+      } else if (item.resolved_title) {
         return item.resolved_title.toLowerCase().includes(searchTerm.toLowerCase());
       }
     });
